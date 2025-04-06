@@ -6,9 +6,11 @@ import torch
 import torch.nn as nn
 from torchvision import transforms, models
 from PIL import Image
+from chatbot import chatbot_response, PROJECT_INFO, MEDICAL_INFO, FAQ_DATABASE, GENERAL_KNOWLEDGE
 
 # === Initialize Flask App ===
 app = Flask(__name__, static_folder='static', template_folder='templates')
+
 
 # === Globals ===
 latest_result = {}  # Stores the latest diagnosis result
@@ -123,13 +125,43 @@ def predict_brain_tumor():
         if os.path.exists(temp_path):
             os.remove(temp_path)
 
-@app.route('/get_latest_result')
-def get_latest_result():
+@app.route('/get_latest_diagnosis_result')
+def get_latest_diagnosis_result():
+    """API endpoint to fetch the latest diagnosis result for the chatbot"""
     if latest_result.get('result') in ['Mild', 'Moderate', 'Severe', 'Proliferate_DR']:
+        latest_result['condition_type'] = 'diabetic_retinopathy'
         latest_result['recommended_specialist'] = 'Ophthalmologist'
     elif latest_result.get('result') in ['glioma', 'meningioma', 'pituitary']:
+        latest_result['condition_type'] = 'brain_tumor'
         latest_result['recommended_specialist'] = 'Neurologist'
-    return jsonify(latest_result)
+    
+    # Return empty dict if no diagnosis yet
+    return latest_result or {}
+
+def get_latest_diagnosis_result():
+    """Function that returns the latest diagnosis result for the chatbot"""
+    global latest_result
+    
+    if not latest_result:
+        return {}
+        
+    result_copy = latest_result.copy()
+    
+    # Add additional information based on diagnosis type
+    if result_copy.get('result') in ['Mild', 'Moderate', 'Severe', 'Proliferate_DR']:
+        result_copy['condition_type'] = 'diabetic_retinopathy'
+        result_copy['recommended_specialist'] = 'Ophthalmologist'
+    elif result_copy.get('result') in ['glioma', 'meningioma', 'pituitary']:
+        result_copy['condition_type'] = 'brain_tumor'
+        result_copy['recommended_specialist'] = 'Neurologist'
+    elif result_copy.get('result') == 'No_DR':
+        result_copy['condition_type'] = 'normal'
+        result_copy['notes'] = 'No signs of diabetic retinopathy detected'
+    elif result_copy.get('result') == 'notumor':
+        result_copy['condition_type'] = 'normal'
+        result_copy['notes'] = 'No brain tumor detected'
+        
+    return result_copy
 
 @app.route('/download_report')
 def download_report():
@@ -166,7 +198,10 @@ def chatbot():
     if not user_message:
         return jsonify({'response': 'Please enter a message.'})
 
-    return jsonify({'response': "I'm a helpful AI medical assistant. Please describe your symptoms or questions."})
+    # Use the chatbot_response function imported from chatbot.py
+    response = chatbot_response(user_message)
+    return jsonify({'response': response})
+
 
 # Other UI routes (optional)
 @app.route('/about')
