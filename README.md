@@ -74,13 +74,13 @@ Git & GitHub – Version control and project hosting
 
 # Team Contributions
 
-Frontend Development:Mohit ,Khushi ,Prachi and Priyanshi
+Frontend Development:Mohit 
 
-Backend Development: Mohit
+Backend Development:Mohit
 
 Chatbot Integration:Mohit
 
-AI Model Development:Mohit(developed both models from scratch) 
+AI Model Development:Pushkar(developed both models from scratch) 
 
 # Future Enhancements
 
