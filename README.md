@@ -5,13 +5,16 @@ The system offers specialist recommendations based on results to guide next medi
 A built-in chatbot answers health-related questions using real-time responses powered by the Gemini API.
 Users can also save consultation records and download personalized diagnosis reports for further care.
 
-![Screenshot 2025-04-06 010243](https://github.com/user-attachments/assets/514b5b81-44c3-4064-9535-e46759f10b6d)
-![Screenshot 2025-04-06 011300](https://github.com/user-attachments/assets/02a08920-74cb-4473-9df5-dff51c69c262)
-![Screenshot 2025-04-06 010905](https://github.com/user-attachments/assets/7355d648-1cef-4391-896b-9d68977d771f)
-![Screenshot 2025-04-06 011104](https://github.com/user-attachments/assets/3d71e36f-9d70-46d9-808a-3a817a800951)
-![Screenshot 2025-04-06 011739](https://github.com/user-attachments/assets/5b49bd2b-c5bd-43fb-b360-9ff38208d273)
-![Screenshot 2025-04-06 010932](https://github.com/user-attachments/assets/82cdbe87-ed5e-4f76-abdf-8422e53d855a)
-![Screenshot 2025-04-06 011018](https://github.com/user-attachments/assets/2add493f-ab30-4c49-beb5-e2c0dc67eada)
+![Screenshot 2025-04-06 010243](https://github.com/user-attachments/assets/bd42ad45-211f-48e4-97fc-d3a1436d0cba)
+![Screenshot 2025-04-06 010905](https://github.com/user-attachments/assets/66b9ad0f-4b61-418d-a290-e8a05093b14d)
+![Screenshot 2025-04-06 010932](https://github.com/user-attachments/assets/9d351879-93df-447f-8053-c19da731e3cf)
+![Screenshot 2025-04-06 011018](https://github.com/user-attachments/assets/9101f815-8f8f-46bb-b68f-3a4e18847e10)
+![Screenshot 2025-04-06 011104](https://github.com/user-attachments/assets/9bdbac5a-94ff-4b4b-ba74-47a81a3fa009)
+![image](https://github.com/user-attachments/assets/eb66cbfb-10e9-41d2-a832-6d0c87ea6145)
+![Screenshot 2025-04-06 011300](https://github.com/user-attachments/assets/d472c218-6c6f-4ebb-8696-20130a03d9e0)
+
+
+
 
 # MINDAEYE Features
 AI-powered diagnosis of diabetic retinopathy from retina scans.
@@ -48,7 +51,8 @@ The model classifies the image into one of five stages: No_DR, Mild, Moderate, S
 
 Brain Tumor:
 
-![Screenshot 2025-04-06 014659](https://github.com/user-attachments/assets/fd6b25d3-c5cd-488b-985a-b42c75b22bc4)
+![Screenshot 2025-04-06 014659](https://github.com/user-attachments/assets/66e26014-63f0-4e7e-a40e-c6d451d9b9e4)
+
 
 #  Technologies Used
 
