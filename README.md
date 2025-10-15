@@ -80,11 +80,11 @@ Git & GitHub – Version control and project hosting
 
 Frontend Development:Mohit 
 
-Backend Development:Mohit
+Backend Development:Mohit 
 
-Chatbot Integration:Mohit
+Chatbot Integration:Pushkar
 
-AI Model Development:Pushkar(developed both models from scratch) 
+AI Model Development:Mohit(developed both models from scratch) 
 
 # Future Enhancements
 
