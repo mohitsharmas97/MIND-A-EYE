@@ -116,7 +116,65 @@ Record Consultations – Save consultation notes for future reference.
 
 # Disclaimer
 
-This platform is intended for research and educational purposes only. It does not provide a certified medical diagnosis. Always consult a licensed healthcare professional for medical concerns.
+Disclaimer
 
+```mermaid
+graph TD
+    subgraph User
+        U[User's Browser]
+    end
 
+    subgraph "NeuroVision AI Server (Flask)"
+        S[Flask App: app.py]
+        T[HTML Templates]
+        DB[(neurovision.db <br> SQLite)]
+        M_DR[PyTorch Model <br> dr_model.pth]
+        M_BT[PyTorch Model <br> brain_tumor.pth]
+        PDF[PDF Generator (FPDF)]
+        MAIL[Email Service (Flask-Mail)]
+        CHAT[Chatbot Logic]
+    end
 
+    subgraph "External APIs"
+        G[Google Gemini AI]
+    end
+
+    %% --- Flows ---
+    U -- "Requests Web Page" --> S
+    S -- "Renders" --> T --> U
+
+    U -- "Signup / Login" --> S
+    S -- "Create/Verify User" --> DB
+    S -- "Creates Session" --> U
+
+    U -- "@login_required" --> S
+
+    U -- "Upload Retina Image (/predict/dr)" --> S
+    S -- "Loads Model" --> M_DR
+    S -- "Gets Prediction" --> M_DR
+    M_DR -- "Result (e.g., 'Mild')" --> S
+    S -- "Saves to 'latest_result' <br> Returns JSON" --> U
+
+    U -- "Upload MRI Image (/predict/brain_tumor)" --> S
+    S -- "Loads Model" --> M_BT
+    S -- "Gets Prediction" --> M_BT
+    M_BT -- "Result (e.g., 'Glioma')" --> S
+    S -- "Saves to 'latest_result' <br> Returns JSON" --> U
+
+    U -- "Send Chat Message (/chatbot)" --> S
+    S -- "Routes to" --> CHAT
+    CHAT -- "Checks Cache, FAQs, Keywords" --> CHAT
+    CHAT -- "If no match, calls API" --> G
+    G -- "AI Response" --> CHAT
+    CHAT -- "Returns JSON" --> U
+
+    U -- "Request Report (/download_report)" --> S
+    S -- "Gets 'latest_result'" --> S
+    S -- "Generates Text" --> CHAT
+    CHAT -- "May call API" --> G
+    G -- "Report Text" --> CHAT
+    S -- "Generates PDF" --> PDF
+    S -- "Sends Email" --> MAIL
+    MAIL -- "Delivers PDF" --> U
+    S -- "Sends PDF Download" --> U
+```
