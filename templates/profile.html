@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NeuroVision AI - User Profile and Analysis History">
+    <title>My Profile - NeuroVision AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --primary-dark: #2980b9;
+            --danger-color: #e74c3c;
+            --danger-dark: #c0392b;
+            --text-color: #2c3e50;
+            --text-light: #7f8c8d;
+            --bg-color: #f5f8fa;
+            --card-bg: #ffffff;
+            --input-bg: #f8f9fa;
+            --border-radius: 8px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: var(--spacing-xl) auto;
+            padding: var(--spacing-xl);
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--input-bg);
+        }
+
+        h1 {
+            color: var(--text-color);
+            font-size: 2.2rem;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-md);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        h2 i {
+            color: var(--primary-color);
+        }
+
+        .profile-section {
+            margin-bottom: var(--spacing-xl);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .profile-field {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .profile-field label {
+            font-weight: 500;
+            color: var(--text-light);
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-field p {
+            margin: 0;
+            padding: var(--spacing-md);
+            background-color: var(--input-bg);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .profile-field p:hover {
+            background-color: #ecf0f1;
+        }
+
+        .button-row {
+            margin-top: var(--spacing-xl);
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .button {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            min-width: 150px;
+        }
+
+        .primary-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .primary-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+
+        .secondary-button {
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid #ddd;
+        }
+
+        .secondary-button:hover {
+            background-color: #e3e8ec;
+            transform: translateY(-2px);
+        }
+
+        .danger-button {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+        }
+
+        .danger-button:hover {
+            background-color: var(--danger-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
+        }
+
+        .history-container {
+            display: grid;
+            gap: var(--spacing-md);
+        }
+
+        .history-empty {
+            padding: var(--spacing-lg);
+            background-color: var(--input-bg);
+            border-radius: var(--border-radius);
+            text-align: center;
+            font-style: italic;
+            color: var(--text-light);
+        }
+
+        .history-item {
+            padding: var(--spacing-md);
+            background-color: var(--input-bg);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .history-item:hover {
+            transform: translateX(3px);
+            box-shadow: var(--shadow);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .history-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .history-result {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .history-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+            font-size: 0.95rem;
+        }
+
+        .history-tag {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+
+        .history-action {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: var(--spacing-sm);
+            border-radius: 4px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .history-action:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: var(--spacing-lg);
+            color: var(--text-light);
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .placeholder {
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: var(--spacing-sm);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: var(--spacing-md);
+                padding: var(--spacing-md);
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* For dark mode preference */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1a1c20;
+                --card-bg: #252830;
+                --text-color: #ecf0f1;
+                --text-light: #bdc3c7;
+                --input-bg: #1e2126;
+                --primary-color: #3498db;
+                --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>My Profile <span class="badge">Pro</span></h1>
+            <div id="account-status" aria-live="polite"></div>
+        </header>
+        
+        <div class="profile-section">
+            <h2><i class="fas fa-user-circle"></i> Account Information</h2>
+            <div class="profile-grid">
+                <div class="profile-field">
+                    <label for="user-name">Name</label>
+                    <p id="user-name">{{ user.name }}</p>
+                </div>
+                <div class="profile-field">
+                    <label for="user-email">Email</label>
+                    <p id="user-email">{{ user.email }}</p>
+                </div>
+                <div class="profile-field">
+                    <label for="user-created">Member Since</label>
+                    <p id="user-created">{{ user.created_at }}</p>
+                </div>
+                <div class="profile-field">
+                    <label for="user-plan">Current Plan</label>
+                    <p id="user-plan">Professional</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="profile-section">
+            <h2><i class="fas fa-history"></i> Recent Analysis History</h2>
+            <div id="history-container" class="history-container">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i> Loading your analysis history...
+                </div>
+            </div>
+        </div>
+        
+        <div class="button-row">
+            <a href="/upload" class="button primary-button">
+                <i class="fas fa-plus"></i> New Analysis
+            </a>
+            <a href="/profile/edit" class="button secondary-button">
+                <i class="fas fa-edit"></i> Edit Profile
+            </a>
+            <a href="/settings" class="button secondary-button">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+            <button id="logout-button" class="button danger-button">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Display user's account status
+        function updateAccountStatus() {
+            const status = document.getElementById('account-status');
+            status.innerHTML = '<span style="color: #2ecc71;"><i class="fas fa-check-circle"></i> Account active</span>';
+        }
+
+        // Load user history from API
+        function loadUserHistory() {
+            // Show loading state
+            const historyContainer = document.getElementById('history-container');
+            
+            // Simulate API call with setTimeout (replace with actual fetch when API is ready)
+            setTimeout(() => {
+                // Check if we have history data (this would be your API response)
+                const hasHistory = Math.random() > 0.3; // Simulate sometimes having history, sometimes not
+                
+                if (hasHistory) {
+                    // Sample data - replace with actual API data
+                    const data = {
+                        history: [
+                            {
+                                id: 'an123',
+                                date: '2025-04-20T14:23:05',
+                                result: 'Tumor detected (87% confidence)',
+                                image_type: 'MRI Brain Scan',
+                                tags: ['urgent', 'follow-up required']
+                            },
+                            {
+                                id: 'an122',
+                                date: '2025-04-15T09:45:12',
+                                result: 'No abnormalities detected',
+                                image_type: 'Chest X-Ray',
+                                tags: ['routine']
+                            },
+                            {
+                                id: 'an120',
+                                date: '2025-04-10T16:12:33',
+                                result: 'Fracture detected (93% confidence)',
+                                image_type: 'Bone X-Ray',
+                                tags: ['treatment required']
+                            }
+                        ]
+                    };
+                    
+                    // Display history items
+                    historyContainer.innerHTML = '';
+                    data.history.forEach(item => {
+                        // Format date nicely
+                        const date = new Date(item.date);
+                        const formattedDate = date.toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        // Create tags HTML
+                        const tagsHtml = item.tags.map(tag => 
+                            `<span class="history-tag">${tag}</span>`
+                        ).join('');
+                        
+                        historyContainer.innerHTML += `
+                            <div class="history-item" data-id="${item.id}">
+                                <div class="history-header">
+                                    <div class="history-date">
+                                        <i class="far fa-calendar-alt"></i> ${formattedDate}
+                                    </div>
+                                    <div class="history-tags">
+                                        ${tagsHtml}
+                                    </div>
+                                </div>
+                                <div class="history-result">${item.result}</div>
+                                <div class="history-details">
+                                    <div><strong>Image Type:</strong> ${item.image_type}</div>
+                                </div>
+                                <div class="history-actions">
+                                    <button class="history-action view-analysis" onclick="viewAnalysis('${item.id}')">
+                                        <i class="fas fa-search"></i> View Details
+                                    </button>
+                                    <button class="history-action download-report" onclick="downloadReport('${item.id}')">
+                                        <i class="fas fa-file-download"></i> Download Report
+                                    </button>
+                                    <button class="history-action share-result" onclick="shareResult('${item.id}')">
+                                        <i class="fas fa-share-alt"></i> Share
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    // Show empty state
+                    historyContainer.innerHTML = `
+                        <div class="history-empty">
+                            <i class="far fa-folder-open"></i>
+                            <p>No recent analysis found. Upload an image for analysis from the <a href="/upload">Upload</a> page.</p>
+                        </div>
+                    `;
+                }
+            }, 1000); // Simulate network delay
+        }
+        
+        // View analysis details
+        function viewAnalysis(id) {
+            console.log(`Viewing analysis ${id}`);
+            window.location.href = `/analysis/${id}`;
+        }
+        
+        // Download analysis report
+        function downloadReport(id) {
+            console.log(`Downloading report for analysis ${id}`);
+            // Implement report download logic
+            alert(`Preparing report download for analysis #${id}`);
+        }
+        
+        // Share analysis result
+        function shareResult(id) {
+            console.log(`Sharing result for analysis ${id}`);
+            // Implement sharing logic
+            const shareDialog = document.createElement('dialog');
+            shareDialog.innerHTML = `
+                <div style="padding: 20px; max-width: 400px;">
+                    <h3 style="margin-bottom: 15px;">Share Analysis #${id}</h3>
+                    <p style="margin-bottom: 15px;">Choose how you want to share this analysis:</p>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button style="padding: 8px 12px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-envelope"></i> Email
+                        </button>
+                        <button style="padding: 8px 12px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-link"></i> Copy Link
+                        </button>
+                        <button style="padding: 8px 12px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            <i class="fas fa-qrcode"></i> QR Code
+                        </button>
+                    </div>
+                    <button id="close-dialog" style="padding: 8px 12px; background: #ecf0f1; border: none; border-radius: 4px; cursor: pointer;">Close</button>
+                </div>
+            `;
+            document.body.appendChild(shareDialog);
+            shareDialog.showModal();
+            
+            document.getElementById('close-dialog').addEventListener('click', () => {
+                shareDialog.close();
+                document.body.removeChild(shareDialog);
+            });
+        }
+        
+        // Handle logout
+        document.getElementById('logout-button').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/logout';
+            }
+        });
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAccountStatus();
+            loadUserHistory();
+        });
+    </script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,7 @@
     <title>MINDAEYE - AI Medical Image Analysis</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-blue: #0D6EFD;
@@ -52,6 +54,7 @@
                 <div class="flex items-center">
                     <a href="/" class="text-2xl font-bold" style="color: var(--primary-blue);">MINDAEYE</a>
                 </div>
+                
                 <div class="hidden md:flex space-x-6 items-center">
                     <a href="/" class="text-dark-navy hover:text-blue-600">Home</a>
                     <a href="/about" class="text-dark-navy hover:text-blue-600">About</a>
@@ -59,9 +62,26 @@
                     <a href="/upload" class="text-dark-navy hover:text-blue-600">Upload</a>
                     <a href="/consult" class="text-dark-navy hover:text-blue-600">Consult</a>
                     <a href="/report" class="text-dark-navy hover:text-blue-600">Report</a>
-                    <a href="/signup" class="btn-primary ml-2">Sign Up</a>
                     <a href="/chat" class="text-dark-navy hover:text-blue-600">Ask AI</a>
+                    
+                    <!-- Profile Dropdown -->
+                    <div class="relative ml-4">
+                        <button id="profile-menu-button" class="flex items-center focus:outline-none">
+                            <div class="w-8 h-8 rounded-full bg-primary-light-blue flex items-center justify-center">
+                                <i class="fas fa-user text-primary-blue"></i>
+                            </div>
+                            <span class="ml-2 text-dark-navy">Profile</span>
+                            <i class="fas fa-chevron-down ml-1 text-sm text-dark-navy"></i>
+                        </button>
+                        
+                        <div id="profile-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                            <a href="/profile" class="block px-4 py-2 text-sm text-dark-navy hover:bg-primary-light-blue">My Profile</a>
+                            <a href="/settings" class="block px-4 py-2 text-sm text-dark-navy hover:bg-primary-light-blue">Settings</a>
+                            <a href="/logout" class="block px-4 py-2 text-sm text-dark-navy hover:bg-primary-light-blue">Logout</a>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="md:hidden">
                     <button id="mobile-menu-toggle" class="text-dark-navy focus:outline-none">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -72,6 +92,18 @@
             </div>
         </div>
     
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pt-2 pb-3 space-y-1">
+            <a href="/" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Home</a>
+            <a href="/about" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">About</a>
+            <a href="/services" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Services</a>
+            <a href="/upload" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Upload</a>
+            <a href="/consult" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Consult</a>
+            <a href="/report" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Report</a>
+            <a href="/profile" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Profile</a>
+            <a href="/chat" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Ask AI</a>
+        </div>
+    </nav>
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pt-2 pb-3 space-y-1">
             <a href="/" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Home</a>
@@ -237,19 +269,42 @@
     </footer>
 
     <!-- JavaScript for Mobile Menu Toggle -->
-    <script>
+   <!-- JavaScript for Mobile Menu Toggle and Profile Dropdown -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         // Mobile Menu Toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            if (mobileMenuToggle) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    const mobileMenu = document.getElementById('mobile-menu');
-                    if (mobileMenu) {
-                        mobileMenu.classList.toggle('hidden');
-                    }
-                });
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', function() {
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenu) {
+                    mobileMenu.classList.toggle('hidden');
+                }
+            });
+        }
+
+        // Profile Dropdown Toggle
+        const profileMenuButton = document.getElementById('profile-menu-button');
+        if (profileMenuButton) {
+            profileMenuButton.addEventListener('click', function() {
+                const profileMenu = document.getElementById('profile-menu');
+                if (profileMenu) {
+                    profileMenu.classList.toggle('hidden');
+                }
+            });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const profileMenu = document.getElementById('profile-menu');
+            const profileMenuButton = document.getElementById('profile-menu-button');
+            
+            if (profileMenu && !profileMenu.contains(event.target) && 
+                profileMenuButton && !profileMenuButton.contains(event.target)) {
+                profileMenu.classList.add('hidden');
             }
         });
-    </script>
+    });
+</script>
 </body>
 </html>

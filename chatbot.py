@@ -140,12 +140,12 @@ response_cache = {}
 
 # Initialize the AI Model with optimized parameters
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-flash-latest",  # Updated model name
     generation_config={
         "temperature": 0.3,
         "top_p": 0.95,
         "top_k": 40,
-        "max_output_tokens": 2048,  # Increased for more comprehensive responses
+        "max_output_tokens": 2048,
     }
 )
 

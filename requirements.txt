@@ -1,9 +1,10 @@
-Flask
+flask
+fpdf
 torch
 torchvision
 Pillow
-fpdf
-gunicorn
-numpy
 google-generativeai
 python-dotenv
+werkzeug
+flask_mail
+gunicorn

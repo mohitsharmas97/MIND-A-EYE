@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - NeuroVision AI</title>
+    <title>Login - NeuroVision AI</title>
     <link rel="stylesheet" href="/static/styles.css">
     <style>
         body {
@@ -34,7 +34,6 @@
             font-weight: bold;
             color: #34495e;
         }
-        input[type="text"],
         input[type="email"],
         input[type="password"] {
             width: 100%;
@@ -68,28 +67,32 @@
             margin-top: 5px;
             font-size: 14px;
         }
-        .login-link {
+        .signup-link {
             text-align: center;
             margin-top: 20px;
         }
-        .login-link a {
+        .signup-link a {
             color: #3498db;
             text-decoration: none;
         }
-        .login-link a:hover {
+        .signup-link a:hover {
             text-decoration: underline;
+        }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .remember-me input {
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Create Account</h1>
+        <h1>Log In</h1>
         <div id="message-container"></div>
-        <form id="signup-form">
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required>
-            </div>
+        <form id="login-form">
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <input type="email" id="email" name="email" required>
@@ -97,50 +100,55 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
-                <small>Password must be at least 8 characters long</small>
             </div>
-            <div class="form-group">
-                <label for="confirm-password">Confirm Password</label>
-                <input type="password" id="confirm-password" name="confirm-password" required>
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember me</label>
             </div>
-            <button type="submit">Sign Up</button>
+            <button type="submit">Log In</button>
         </form>
-        <div class="login-link">
-            Already have an account? <a href="/login">Log In</a>
+        <div class="signup-link">
+            Don't have an account? <a href="/signup">Sign Up</a>
         </div>
     </div>
 
     <script>
-        document.getElementById('signup-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value
-    };
-    
-    fetch('/signup', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            window.location.href = '/login_page';
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred during signup');
-    });
-});
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+            const messageContainer = document.getElementById('message-container');
+            
+            // Send data to server
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    remember: remember
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageContainer.innerHTML = '<p class="success-message">' + data.message + '</p>';
+                    setTimeout(function() {
+                        window.location.href = data.redirect || '/';
+                    }, 1000);
+                } else {
+                    messageContainer.innerHTML = '<p class="error-message">' + data.message + '</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                messageContainer.innerHTML = '<p class="error-message">An error occurred. Please try again.</p>';
+            });
+        });
     </script>
 </body>
 </html>
