@@ -114,67 +114,56 @@ Download Report – Generate and download a PDF report of the diagnosis.
 
 Record Consultations – Save consultation notes for future reference.
 
-# Disclaimer
-
-Disclaimer
+## 🏗️ System Architecture
 
 ```mermaid
 graph TD
-    subgraph User
-        U[User's Browser]
+    subgraph Client [Client Side]
+        U[User Browser]
+        UI[Tailwind UI]
+        U <--> UI
     end
 
-    subgraph "NeuroVision AI Server (Flask)"
-        S[Flask App: app.py]
-        T[HTML Templates]
-        DB[(neurovision.db <br> SQLite)]
-        M_DR[PyTorch Model <br> dr_model.pth]
-        M_BT[PyTorch Model <br> brain_tumor.pth]
-        PDF[PDF Generator (FPDF)]
-        MAIL[Email Service (Flask-Mail)]
+    subgraph Server [Flask Backend]
+        API[Routing / Controllers]
+        SEC[EXIF Stripper & Privacy]
+        DB[(SQLAlchemy DB <br> PostgreSQL/SQLite)]
+        PDF[PDF Engine - FPDF]
         CHAT[Chatbot Logic]
+        MAIL[Email Service]
     end
 
-    subgraph "External APIs"
-        G[Google Gemini AI]
+    subgraph ML [AI Inference Engine]
+        MEM[In-Memory BytesIO]
+        DC[DICOM Parser]
+        PT[PyTorch EfficientNet Models]
+        XAI[Grad-CAM Generator]
     end
 
-    %% --- Flows ---
-    U -- "Requests Web Page" --> S
-    S -- "Renders" --> T --> U
+    subgraph External [External APIs]
+        GEM[Google Gemini API]
+    end
 
-    U -- "Signup / Login" --> S
-    S -- "Create/Verify User" --> DB
-    S -- "Creates Session" --> U
-
-    U -- "@login_required" --> S
-
-    U -- "Upload Retina Image (/predict/dr)" --> S
-    S -- "Loads Model" --> M_DR
-    S -- "Gets Prediction" --> M_DR
-    M_DR -- "Result (e.g., 'Mild')" --> S
-    S -- "Saves to 'latest_result' <br> Returns JSON" --> U
-
-    U -- "Upload MRI Image (/predict/brain_tumor)" --> S
-    S -- "Loads Model" --> M_BT
-    S -- "Gets Prediction" --> M_BT
-    M_BT -- "Result (e.g., 'Glioma')" --> S
-    S -- "Saves to 'latest_result' <br> Returns JSON" --> U
-
-    U -- "Send Chat Message (/chatbot)" --> S
-    S -- "Routes to" --> CHAT
-    CHAT -- "Checks Cache, FAQs, Keywords" --> CHAT
-    CHAT -- "If no match, calls API" --> G
-    G -- "AI Response" --> CHAT
-    CHAT -- "Returns JSON" --> U
-
-    U -- "Request Report (/download_report)" --> S
-    S -- "Gets 'latest_result'" --> S
-    S -- "Generates Text" --> CHAT
-    CHAT -- "May call API" --> G
-    G -- "Report Text" --> CHAT
-    S -- "Generates PDF" --> PDF
-    S -- "Sends Email" --> MAIL
-    MAIL -- "Delivers PDF" --> U
-    S -- "Sends PDF Download" --> U
-```
+    %% Flow
+    UI -- "Upload Scan (JPG/PNG/DICOM)" --> API
+    API -- "Auth & Session" <--> DB
+    API -- "Raw File" --> MEM
+    MEM -- "Extract Pixels" --> DC
+    DC -- "Strip EXIF" --> SEC
+    SEC -- "Clean Tensor" --> PT
+    PT -- "Prediction & Confidence Score" --> API
+    PT -- "Feature Maps" --> XAI
+    XAI -- "Base64 Heatmap" --> API
+    
+    API -- "JSON Results" --> UI
+    
+    UI -- "Chat Query" --> CHAT
+    CHAT <--> GEM
+    CHAT -- "Response" --> UI
+    
+    UI -- "Request Report" --> API
+    API -- "Query Context" --> GEM
+    GEM -- "Clinical Text" --> API
+    API -- "Generate" --> PDF
+    PDF -- "Email Report" --> MAIL
+    MAIL --> U
