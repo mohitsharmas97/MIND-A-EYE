@@ -1,169 +1,352 @@
-# MINDAEYE-Healthcare
-MindAye helps in early detection of diabetic retinopathy and brain tumors using AI analysis of medical images.
-It allows users to upload eye or brain scans and instantly receive a preliminary diagnosis.
-The system offers specialist recommendations based on results to guide next medical steps.
-A built-in chatbot answers health-related questions using real-time responses powered by the Gemini API.
-Users can also save consultation records and download personalized diagnosis reports for further care.
+<div align="center">
 
-![Screenshot 2025-04-06 010243](https://github.com/user-attachments/assets/bd42ad45-211f-48e4-97fc-d3a1436d0cba)
-![Screenshot 2025-04-06 010905](https://github.com/user-attachments/assets/66b9ad0f-4b61-418d-a290-e8a05093b14d)
-![Screenshot 2025-04-06 010932](https://github.com/user-attachments/assets/9d351879-93df-447f-8053-c19da731e3cf)
-![Screenshot 2025-04-06 011018](https://github.com/user-attachments/assets/9101f815-8f8f-46bb-b68f-3a4e18847e10)
-![Screenshot 2025-04-06 011104](https://github.com/user-attachments/assets/9bdbac5a-94ff-4b4b-ba74-47a81a3fa009)
-![image](https://github.com/user-attachments/assets/eb66cbfb-10e9-41d2-a832-6d0c87ea6145)
-![Screenshot 2025-04-06 011300](https://github.com/user-attachments/assets/d472c218-6c6f-4ebb-8696-20130a03d9e0)
+# 👁️ MindAye
 
+### *AI-powered medical imaging for early detection — when every moment matters.*
 
+**Upload retina or brain scans · Get instant AI analysis · Chat with a medical assistant · Download clinician-ready reports**
 
+<br>
 
-# MINDAEYE Features
-AI-powered diagnosis of diabetic retinopathy from retina scans.
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-Web%20API-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EfficientNet-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Gemini](https://img.shields.io/badge/Gemini-1.5%20Flash-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 
-AI-based detection of brain tumors from MRI images.
+<br>
 
-Instant specialist recommendation based on diagnosis results.
+[Features](#-features) ·
+[How It Works](#-how-it-works) ·
+[Screenshots](#-screenshots) ·
+[Quick Start](#-quick-start) ·
+[Configuration](#-configuration) ·
+[API](#-api-overview) ·
+[Team](#-team) ·
+[Disclaimer](#%EF%B8%8F-important-disclaimer)
 
-Gemini API-powered chatbot for health and project-related queries.
+</div>
 
-Chat interface for interactive medical assistance.
+---
 
-Generates downloadable PDF diagnosis reports.
+## 🩺 What is MindAye?
 
-Saves consultation records with patient and doctor info.
+**MindAye** (also branded as *NeuroVision AI* in parts of the backend) is a full-stack healthcare web application that helps users and clinicians get **fast, preliminary insights** from medical images — without replacing professional diagnosis.
 
-Simple signup and login system for user access.
+| Domain | Input | AI output |
+|--------|--------|-----------|
+| **Diabetic retinopathy** | Retina fundus photos (JPG, PNG, DICOM) | 5-stage classification + confidence score |
+| **Brain tumors** | MRI / brain scans (JPG, PNG, DICOM) | 4-class tumor type or healthy |
 
-Placeholder endpoint for future video consultation integration.
+The platform combines **custom-trained EfficientNet-B0 models**, **explainable AI (Grad-CAM heatmaps)**, a **Google Gemini–powered assistant**, and **PDF + email reports** — all behind secure signup/login.
 
-# Supported Disease Classifications
+> ⚠️ **MindAye is a decision-support tool, not a licensed medical device.** Always confirm results with a qualified healthcare provider.
 
-Brain Tumor Classification:
-Users upload brain MRI images, which are analyzed by an AI model to detect and classify tumors.
-The system identifies one of four classes: Glioma, Meningioma, Pituitary, or No Tumor.
+---
 
-Diabetic Retinopathy Classification:
-Users submit retina fundus images for AI-based analysis of retinal damage.
-The model classifies the image into one of five stages: No_DR, Mild, Moderate, Severe, or Proliferate_DR.
+## ✨ Features
 
-# Model Accuracies
-1. Brain Tumor:98%
-2. Blind Retnopathy:84%
+| Feature | Description |
+|---------|-------------|
+| 🔬 **Dual AI models** | Separate PyTorch models for diabetic retinopathy and brain tumor detection |
+| 🎯 **Confidence scores** | Softmax-based probability for each prediction |
+| 🗺️ **Grad-CAM heatmaps** | Visual overlay showing which regions influenced the AI decision |
+| 🏥 **DICOM support** | Read `.dcm` / `.dicom` files in-memory via `pydicom` |
+| 🔒 **Privacy-first uploads** | EXIF metadata stripped from standard images before processing |
+| 🤖 **Smart chatbot** | FAQ cache, medical knowledge base, and Gemini API fallback |
+| 📄 **PDF reports** | AI-generated narrative + diagnosis bundled into downloadable reports |
+| 📧 **Email delivery** | Optional report attachment via Flask-Mail (SMTP) |
+| 👤 **User accounts** | SQLAlchemy auth with hashed passwords (SQLite locally, PostgreSQL in production) |
+| 🌐 **Cloud-ready** | Deployed via [Render](https://render.com) using `gunicorn` (`render.yaml` included) |
 
-Brain Tumor:
+---
 
-![Screenshot 2025-04-06 014659](https://github.com/user-attachments/assets/66e26014-63f0-4e7e-a40e-c6d451d9b9e4)
+## 🧠 Model performance
 
+Models are trained in the included Jupyter notebooks (`Brain_tumor.ipynb`, `diabetes_ratinopathy.ipynb`) using **EfficientNet-B0** architectures.
 
-#  Technologies Used
+| Model | Classes | Reported accuracy |
+|-------|---------|-------------------|
+| **Brain tumor** | `glioma`, `meningioma`, `pituitary`, `notumor` | ~**98%** |
+| **Diabetic retinopathy** | `No_DR`, `Mild`, `Moderate`, `Severe`, `Proliferate_DR` | ~**84%** |
 
-Python – Core programming language
+Place trained weights at:
 
-Flask – Web framework for building the application
+```
+models/
+├── dr_model.pth
+└── brain_tumor.pth
+```
 
-PyTorch – Deep learning framework for model development and inference
+> These `.pth` files are required at runtime. They are not bundled in the repo — train locally or obtain them from your team.
 
-Torchvision – Pretrained models and image transformation utilities
+---
 
-OpenCV & PIL – Image processing and manipulation
-
-FPDF – PDF report generation
-
-HTML/CSS/JavaScript – Frontend for user interface
-
-Gemini API – Powering the AI chatbot for user queries
-
-Google Colab / Jupyter Notebooks – Model training and experimentation
-
-Git & GitHub – Version control and project hosting
-
-# Team Contributions
-
-Frontend Development:Mohit 
-
-Backend Development:Mohit 
-
-Chatbot Integration:Pushkar
-
-AI Model Development:Mohit(developed both models from scratch) 
-
-# Future Enhancements
-
-Add real-time video consultation using Twilio or Agora integration.
-
-Implement secure user authentication and patient history tracking.
-
-Expand disease classification to include skin cancer, pneumonia, etc.
-
-Deploy the app on cloud platforms like AWS, Azure, or Heroku.
-
-Enhance chatbot intelligence for more accurate and broader medical support.
-
-Integrate electronic health records (EHR) for complete patient profiles.
-
-Enable multilingual support for wider accessibility.
-
-# Usage
-
-Upload Medical Images – Upload retina fundus or brain MRI images through the web interface.
-
-Get Instant Diagnosis – The AI model analyzes the image and provides a classification result.
-
-Chat with AI Assistant – Ask medical-related queries through the integrated chatbot powered by Gemini API.
-
-Download Report – Generate and download a PDF report of the diagnosis.
-
-Record Consultations – Save consultation notes for future reference.
-
-## 🏗️ System Architecture
+## 🏗️ How it works
 
 ```mermaid
-graph TD
-    subgraph Client [Client Side]
-        U[User Browser]
-        UI[Tailwind UI]
-        U <--> UI
+flowchart TB
+    subgraph Client["Browser"]
+        U[User]
     end
 
-    subgraph Server [Flask Backend]
-        API[Routing / Controllers]
-        SEC[EXIF Stripper & Privacy]
-        DB[(SQLAlchemy DB <br> PostgreSQL/SQLite)]
-        PDF[PDF Engine - FPDF]
-        CHAT[Chatbot Logic]
-        MAIL[Email Service]
+    subgraph Server["Flask App · app.py"]
+        S[Routes & Auth]
+        DB[(SQLite / PostgreSQL)]
+        M1[dr_model.pth]
+        M2[brain_tumor.pth]
+        CAM[Grad-CAM Heatmap]
+        PDF[FPDF Report]
+        MAIL[Flask-Mail]
+        BOT[Chatbot Engine]
     end
 
-    subgraph ML [AI Inference Engine]
-        MEM[In-Memory BytesIO]
-        DC[DICOM Parser]
-        PT[PyTorch EfficientNet Models]
-        XAI[Grad-CAM Generator]
+    subgraph External["External Services"]
+        G[Google Gemini API]
+        SMTP[SMTP Server]
     end
 
-    subgraph External [External APIs]
-        GEM[Google Gemini API]
-    end
+    U -->|Browse pages| S
+    U -->|Signup / Login| S --> DB
+    U -->|Upload retina| S --> M1 --> CAM --> S
+    U -->|Upload MRI| S --> M2 --> CAM --> S
+    S -->|JSON result + heatmap| U
+    U -->|Chat message| BOT
+    BOT -->|Cache / FAQ| BOT
+    BOT -->|Complex queries| G
+    U -->|Download report| S --> PDF
+    S --> MAIL --> SMTP
+    PDF --> U
+```
 
-    %% Flow
-    UI -- "Upload Scan (JPG/PNG/DICOM)" --> API
-    API -- "Auth & Session" <--> DB
-    API -- "Raw File" --> MEM
-    MEM -- "Extract Pixels" --> DC
-    DC -- "Strip EXIF" --> SEC
-    SEC -- "Clean Tensor" --> PT
-    PT -- "Prediction & Confidence Score" --> API
-    PT -- "Feature Maps" --> XAI
-    XAI -- "Base64 Heatmap" --> API
-    
-    API -- "JSON Results" --> UI
-    
-    UI -- "Chat Query" --> CHAT
-    CHAT <--> GEM
-    CHAT -- "Response" --> UI
-    
-    UI -- "Request Report" --> API
-    API -- "Query Context" --> GEM
-    GEM -- "Clinical Text" --> API
-    API -- "Generate" --> PDF
-    PDF -- "Email Report" --> MAIL
-    MAIL --> U
+### Classification reference
+
+**Brain tumor (MRI)**
+
+| Label | Meaning |
+|-------|---------|
+| `glioma` | Tumor arising from glial cells |
+| `meningioma` | Tumor from brain/spinal meninges |
+| `pituitary` | Pituitary gland tumor (often benign) |
+| `notumor` | No detectable tumor |
+
+**Diabetic retinopathy (fundus)**
+
+| Label | Meaning |
+|-------|---------|
+| `No_DR` | No diabetic retinopathy |
+| `Mild` | Early microaneurysms |
+| `Moderate` | Some vessel blockage |
+| `Severe` | Extensive vessel blockage |
+| `Proliferate_DR` | Advanced proliferative stage |
+
+After analysis, the app recommends specialists (e.g. **Ophthalmologist** for DR, **Neurologist** for brain findings).
+
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/bd42ad45-211f-48e4-97fc-d3a1436d0cba" width="45%" alt="MindAye homepage" />
+  <img src="https://github.com/user-attachments/assets/66b9ad0f-4b61-418d-a290-e8a05093b14d" width="45%" alt="Upload interface" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9d351879-93df-447f-8053-c19da731e3cf" width="45%" alt="Analysis results" />
+  <img src="https://github.com/user-attachments/assets/9101f815-8f8f-46bb-b68f-3a4e18847e10" width="45%" alt="Chat assistant" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9bdbac5a-94ff-4b4b-ba74-47a81a3fa009" width="45%" alt="Services" />
+  <img src="https://github.com/user-attachments/assets/d472c218-6c6f-4ebb-8696-20130a03d9e0" width="45%" alt="Report view" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/66e26014-63f0-4e7e-a40e-c6d451d9b9e4" width="70%" alt="Brain tumor model metrics" />
+</p>
+
+---
+
+## 🚀 Quick start
+
+### Prerequisites
+
+- **Python 3.9+**
+- **pip** and a virtual environment (recommended)
+- **CUDA GPU** (optional, speeds up inference)
+- Trained model weights in `models/` (see above)
+- A **Google Gemini API key** for the chatbot and report narratives
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/<your-org>/MIND-A-EYE.git
+cd MIND-A-EYE
+```
+
+### 2. Create a virtual environment
+
+```bash
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# macOS / Linux
+source venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+pip install flask-sqlalchemy pydicom numpy pytorch-grad-cam
+```
+
+> `app.py` uses packages beyond `requirements.txt`. Install the extra line above for full functionality (DB, DICOM, Grad-CAM).
+
+### 4. Configure environment variables
+
+Create a `.env` file in the project root (see [Configuration](#-configuration)).
+
+### 5. Run the application
+
+```bash
+python app.py
+```
+
+Open **http://127.0.0.1:5000** in your browser, sign up, log in, and upload a scan from the **Upload** page.
+
+### Deploy on Render
+
+The repo includes `render.yaml`. Connect the repository on Render; set environment variables in the dashboard; use:
+
+- **Build:** `pip install -r requirements.txt`
+- **Start:** `gunicorn app:app`
+
+---
+
+## ⚙️ Configuration
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `SECRET_KEY` | Recommended | Flask session secret |
+| `GEMINI_API_KEY` | **Yes** (chatbot/reports) | Google Generative AI API key |
+| `DATABASE_URL` | Optional | Defaults to `sqlite:///neurovision.db`; use PostgreSQL in production |
+| `MAIL_SERVER` | Optional | SMTP host (default: `smtp.gmail.com`) |
+| `MAIL_PORT` | Optional | SMTP port (default: `587`) |
+| `MAIL_USERNAME` | Optional | SMTP username |
+| `MAIL_PASSWORD` | Optional | SMTP app password |
+| `MAIL_DEFAULT_SENDER` | Optional | From address for report emails |
+| `PORT` | Optional | Port for local/production server (default: `5000`) |
+
+**Example `.env`:**
+
+```env
+SECRET_KEY=your-secret-key-here
+GEMINI_API_KEY=your-gemini-api-key
+DATABASE_URL=sqlite:///neurovision.db
+
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+MAIL_DEFAULT_SENDER=your-email@gmail.com
+```
+
+Never commit `.env` or API keys to version control.
+
+---
+
+## 📁 Project structure
+
+```
+MIND-A-EYE/
+├── app.py                    # Main Flask app, routes, models, Grad-CAM, reports
+├── chatbot.py                # Standalone chatbot module (Gemini + knowledge base)
+├── utils.py                  # Diagnosis result helpers
+├── requirements.txt          # Core Python dependencies
+├── render.yaml               # Render.com deployment config
+├── Brain_tumor.ipynb         # Brain tumor model training notebook
+├── diabetes_ratinopathy.ipynb# Diabetic retinopathy training notebook
+├── models/                   # Trained weights (not in repo — add locally)
+│   ├── dr_model.pth
+│   └── brain_tumor.pth
+├── templates/                # Jinja2 HTML pages
+│   ├── homepage.html
+│   ├── upload.html
+│   ├── chat.html
+│   ├── report.html
+│   └── ...
+├── static/                   # CSS and assets
+└── reports/                  # Generated PDFs (created at runtime)
+```
+
+---
+
+## 🔌 API overview
+
+Protected routes require an active login session.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/predict/dr` | Upload retina image → DR classification + heatmap |
+| `POST` | `/predict/brain_tumor` | Upload brain MRI → tumor classification + heatmap |
+| `GET` | `/get_latest_result` | Fetch last diagnosis with specialist hint |
+| `GET` | `/download_report?name=...` | Generate PDF report (optional email) |
+| `POST` | `/chatbot` | JSON `{ "message": "..." }` → AI response |
+| `POST` | `/signup` | Register new user |
+| `POST` | `/login` | Authenticate user |
+
+---
+
+## 🛠️ Tech stack
+
+| Layer | Technologies |
+|-------|----------------|
+| **Backend** | Python, Flask, SQLAlchemy, Werkzeug |
+| **ML / CV** | PyTorch, Torchvision (EfficientNet-B0), OpenCV, PIL, Grad-CAM, pydicom |
+| **AI assistant** | Google Generative AI (Gemini 1.5 Flash) |
+| **Reports** | FPDF, Flask-Mail |
+| **Frontend** | HTML, Tailwind CSS (CDN), JavaScript, Axios |
+| **Training** | Jupyter / Google Colab notebooks |
+| **Deploy** | Gunicorn, Render |
+
+---
+
+## 👥 Team
+
+| Role | Contributor |
+|------|-------------|
+| Frontend development | **Mohit Sharma** |
+| Backend development | **Mohit Sharma** |
+| AI model development (both models from scratch) | **Mohit Sharma** |
+| Chatbot integration | **Pushkar** |
+
+---
+
+## 🔮 Roadmap
+
+- [ ] Real-time **video consultation** (Twilio / Agora)
+- [ ] Stronger **patient history** and audit trails
+- [ ] Additional disease classifiers (e.g. skin lesions, chest X-ray)
+- [ ] **EHR / PACS** integration via secure API
+- [ ] **Multilingual** UI and chatbot
+- [ ] Expanded cloud deployment (AWS, Azure, etc.)
+
+---
+
+## ⚠️ Important disclaimer
+
+MindAye / NeuroVision AI provides **preliminary, AI-generated analysis for educational and screening support only**. It is **not** a substitute for professional medical advice, diagnosis, or treatment. False positives and false negatives can occur. **Always consult a licensed physician** before making health decisions.
+
+---
+
+<div align="center">
+
+**Built with care for accessible, early medical insights.**
+
+⭐ Star this repo if MindAye helps your project or research!
+
+*© 2025 MindAye. All rights reserved.*
+
+</div>
