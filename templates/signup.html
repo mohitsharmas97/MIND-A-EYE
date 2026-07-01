@@ -3,144 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - NeuroVision AI</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f5f8fa;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #34495e;
-        }
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        .error-message {
-            color: #e74c3c;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-        .success-message {
-            color: #2ecc71;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .login-link a {
-            color: #3498db;
-            text-decoration: none;
-        }
-        .login-link a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    <title>Sign Up — MINDAEYE</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>Create Account</h1>
-        <div id="message-container"></div>
-        <form id="signup-form">
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold text-center mb-1" style="color: #0D6EFD;">MINDAEYE</h1>
+        <p class="text-center text-gray-500 text-sm mb-6">Create your account</p>
+        <form id="signup-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Full Name</label>
+                <input type="text" id="name" required class="w-full border rounded-lg px-3 py-2">
             </div>
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required>
+            <div>
+                <label class="block text-sm font-medium mb-1">Email</label>
+                <input type="email" id="email" required class="w-full border rounded-lg px-3 py-2">
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-                <small>Password must be at least 8 characters long</small>
+            <div>
+                <label class="block text-sm font-medium mb-1">Password</label>
+                <input type="password" id="password" required minlength="8" class="w-full border rounded-lg px-3 py-2">
+                <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
             </div>
-            <div class="form-group">
-                <label for="confirm-password">Confirm Password</label>
-                <input type="password" id="confirm-password" name="confirm-password" required>
-            </div>
-            <button type="submit">Sign Up</button>
+            <button type="submit" class="w-full py-2 rounded-lg text-white font-medium" style="background: #0D6EFD;">Sign Up</button>
         </form>
-        <div class="login-link">
-            Already have an account? <a href="/login">Log In</a>
-        </div>
+        <p class="text-center text-sm mt-4">Already have an account? <a href="/login" style="color: #0D6EFD;">Log in</a></p>
+        <p class="text-center text-sm mt-2"><a href="/" class="text-gray-500">← Back to home</a></p>
     </div>
-
     <script>
-        document.getElementById('signup-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value
-    };
-    
-    fetch('/signup', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            window.location.href = '/login_page';
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred during signup');
-    });
-});
+        document.getElementById('signup-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const res = await fetch('/api/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value,
+                }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert(data.message);
+                window.location.href = '/login';
+            } else {
+                alert(data.message);
+            }
+        });
     </script>
 </body>
 </html>

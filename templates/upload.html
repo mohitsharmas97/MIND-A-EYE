@@ -3,348 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload - MINDAEYE</title>
+    <title>Analyze — MINDAEYE</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
-        :root {
-            --primary-blue: #0D6EFD;
-            --light-blue: #E9F3FF;
-            --dark-navy: #0C2D62;
-            --gray-text: #666666;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-        }
-        .bg-primary-light-blue {
-            background-color: var(--light-blue);
-        }
-        .text-dark-navy {
-            color: var(--dark-navy);
-        }
-        .drag-active {
-            border-color: var(--primary-blue);
-            background-color: var(--light-blue);
-        }
+        :root { --primary: #0D6EFD; --light: #E9F3FF; --navy: #0C2D62; }
+        body { font-family: Arial, sans-serif; }
+        .drag-active { border-color: var(--primary) !important; background: var(--light); }
     </style>
 </head>
-<body class="bg-white">
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center">
-                    <a href="/" class="text-2xl font-bold" style="color: var(--primary-blue);">MINDAEYE</a>
-                </div>
-                <div class="hidden md:flex space-x-6 items-center">
-                    <a href="/" class="text-dark-navy hover:text-blue-600">Home</a>
-                    <a href="/about" class="text-dark-navy hover:text-blue-600">About</a>
-                    <a href="/services" class="text-dark-navy hover:text-blue-600">Services</a>
-                    <a href="/upload" class="text-blue-600 font-medium">Upload</a>
-                    <a href="/consult" class="text-dark-navy hover:text-blue-600">Consult</a>
-                    <a href="/report" class="text-dark-navy hover:text-blue-600">Report</a>
-                    <a href="/signup" class="btn-primary ml-2">Sign Up</a>
-                    <a href="/chat" class="text-dark-navy hover:text-blue-600">Ask AI</a>
-                </div>
-                <div class="md:hidden">
-                    <button id="mobile-menu-toggle" class="text-dark-navy focus:outline-none">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
+<body class="bg-gray-50">
+    <nav class="fixed top-0 w-full bg-white shadow z-50">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/" class="text-2xl font-bold" style="color: var(--primary);">MINDAEYE</a>
+            <div class="flex items-center gap-4 text-sm">
+                <a href="/" class="hover:text-blue-600">Home</a>
+                <a href="/history" class="hover:text-blue-600">History</a>
+                <span class="text-gray-500">{{ current_user.name if current_user else '' }}</span>
+                <a href="/logout" class="hover:text-blue-600">Logout</a>
             </div>
-        </div>
-    
-        <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pt-2 pb-3 space-y-1">
-            <a href="/" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Home</a>
-            <a href="/about" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">About</a>
-            <a href="/services" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Services</a>
-            <a href="/upload" class="block text-blue-600 font-medium px-3 py-2 rounded-md">Upload</a>
-            <a href="/consult" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Consult</a>
-            <a href="/report" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Report</a>
-            <a href="/signup" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Sign Up</a>
-            <a href="/chat" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Ask AI</a>
         </div>
     </nav>
 
-    <main class="pt-16">
-        <section class="py-16 bg-primary-light-blue">
-            <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="p-8 text-center">
-                        <h1 class="text-3xl font-bold text-dark-navy mb-2">Upload Medical Image</h1>
-                        <p class="text-gray-text mb-6">Get AI-powered analysis of your medical images</p>
-                        
-                        <form id="uploadForm" class="space-y-6">
-                            <div>
-                                <label for="analysisType" class="block text-left text-sm font-medium text-dark-navy mb-1">Select Analysis Type</label>
-                                <select id="analysisType" name="analysisType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-blue focus:border-primary-blue">
-                                    <option value="dr">Diabetic Retinopathy (Retinal Scan)</option>
-                                    <option value="brain_tumor">Brain Tumor (MRI Scan)</option>
-                                </select>
-                            </div>
-                            
-                            <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center cursor-pointer transition">
-                                <div id="uploadContent">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                    </svg>
-                                    <div class="mt-4 flex text-sm text-gray-600 justify-center">
-                                        <label class="relative cursor-pointer bg-white rounded-md font-medium" style="color: var(--primary-blue);">
-                                            <span>Click to select a file</span>
-                                            <input id="fileInput" name="file" type="file" class="sr-only" accept="image/*,.dcm,.dicom">
-                                        </label>
-                                        <p class="pl-1">or drag and drop</p>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-2">PNG, JPG, DICOM up to 15MB</p>
-                                </div>
-                                <div id="previewContainer" class="hidden">
-                                    <img id="imagePreview" src="#" alt="Preview" class="max-h-64 object-contain mx-auto mb-4 rounded">
-                                    <p id="fileName" class="text-sm font-medium text-gray-900"></p>
-                                    <button id="changeFile" type="button" class="mt-2 text-sm" style="color: var(--primary-blue);">Change file</button>
-                                </div>
-                            </div>
-                            
-                            <button id="submitBtn" type="submit" class="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white hover:opacity-90 transition disabled:opacity-50" style="background-color: var(--primary-blue);">
-                                Analyze Image
-                            </button>
-                        </form>
+    <main class="pt-24 pb-16 px-4">
+        <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-8">
+            <h1 class="text-2xl font-bold text-center mb-1" style="color: var(--navy);">Upload Medical Image</h1>
+            <p class="text-center text-gray-500 mb-6">Choose MIND (brain MRI) or EYE (retinal scan)</p>
+
+            <form id="uploadForm" class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium mb-1" style="color: var(--navy);">Analysis Type</label>
+                    <select id="analysisType" class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400">
+                        <option value="dr">EYE — Diabetic Retinopathy (Fundus)</option>
+                        <option value="brain_tumor">MIND — Brain Tumor (MRI)</option>
+                    </select>
+                </div>
+
+                <div id="dropZone" class="border-2 border-dashed border-gray-300 rounded-lg p-10 text-center cursor-pointer">
+                    <div id="uploadContent">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                        <p>Click or drag & drop JPG / PNG (max 15 MB)</p>
+                        <input id="fileInput" type="file" class="hidden" accept="image/jpeg,image/png,image/jpg">
+                    </div>
+                    <div id="previewContainer" class="hidden">
+                        <img id="imagePreview" class="max-h-48 mx-auto rounded mb-2" alt="Preview">
+                        <p id="fileName" class="text-sm font-medium"></p>
+                        <button type="button" id="changeFile" class="text-sm mt-1" style="color: var(--primary);">Change file</button>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <section id="resultsSection" class="py-16 bg-white hidden">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-                    <div class="p-8">
-                        <h2 class="text-2xl font-bold text-dark-navy mb-6 text-center border-b pb-4">Clinical Analysis Results</h2>
-                        
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <div>
-                                <h3 class="text-lg font-semibold text-dark-navy mb-2">Original Scan</h3>
-                                <img id="resultImage" src="#" alt="Uploaded Image" class="w-full rounded-lg border border-gray-200 shadow-sm">
+                <button id="submitBtn" type="submit" class="w-full py-3 rounded-lg text-white font-medium" style="background: var(--primary);">
+                    Analyze Image
+                </button>
+            </form>
+        </div>
+
+        <section id="resultsSection" class="max-w-4xl mx-auto mt-10 hidden">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-xl font-bold text-center mb-6 border-b pb-4" style="color: var(--navy);">Analysis Results</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="font-semibold mb-2">Original Image</h3>
+                        <img id="resultImage" class="w-full rounded-lg border" alt="Result">
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg" style="background: var(--light);">
+                            <p class="text-xs uppercase tracking-wider text-gray-500 mb-1">Diagnosis</p>
+                            <p id="diagnosisResult" class="text-2xl font-bold uppercase" style="color: var(--navy);">—</p>
+                            <p id="modelLabel" class="text-sm text-gray-500 mt-1"></p>
+                        </div>
+                        <div id="confidenceContainer" class="hidden">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium">Top Class Confidence</span>
+                                <span id="confidenceText" class="font-bold" style="color: var(--primary);">0%</span>
                             </div>
-
-                            <div class="flex flex-col space-y-4">
-                                <h3 class="text-lg font-semibold text-dark-navy">Diagnosis</h3>
-                                
-                                <div class="bg-primary-light-blue p-4 rounded-lg">
-                                    <div id="diagnosisResult" class="text-center mb-4">
-                                        <p class="text-gray-text">Your image is being analyzed...</p>
-                                    </div>
-
-                                    <div id="confidenceContainer" class="mb-4 hidden">
-                                        <div class="flex justify-between mb-1">
-                                            <span class="text-sm font-medium text-dark-navy uppercase tracking-wider">AI Certainty</span>
-                                            <span id="confidenceText" class="text-sm font-bold text-blue-600">0%</span>
-                                        </div>
-                                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                            <div id="confidenceBar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div id="heatmapContainer" class="hidden flex-col items-center mt-2">
-                                    <h3 class="text-md font-semibold text-dark-navy w-full text-left mb-2">
-                                        <i class="fas fa-bullseye text-red-500 mr-2"></i>Grad-CAM Activation Map
-                                    </h3>
-                                    <div class="relative w-full">
-                                        <img id="heatmapImage" src="#" alt="Heatmap Analysis" class="w-full rounded-lg border border-gray-200 shadow-sm">
-                                        <div class="absolute bottom-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
-                                            Focal Attention
-                                        </div>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-2 text-center">
-                                        Red and yellow areas highlight the specific structural regions the AI used to make this classification.
-                                    </p>
-                                </div>
-                                
-                                <div class="mt-auto pt-6">
-                                    <button id="downloadReport" class="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-md font-medium text-white hover:opacity-90 transition" style="background-color: var(--primary-blue);">
-                                        <i class="fas fa-file-pdf mr-2"></i> Download Full Report
-                                    </button>
-                                </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="confidenceBar" class="h-2 rounded-full transition-all duration-700" style="background: var(--primary); width: 0%;"></div>
                             </div>
                         </div>
+                        <div id="probabilitySection" class="hidden">
+                            <h3 class="text-sm font-semibold mb-2" style="color: var(--navy);">
+                                <i class="fas fa-chart-bar mr-1"></i> All Class Probabilities
+                            </h3>
+                            <div id="probabilityBars" class="space-y-2"></div>
+                        </div>
+                        <p id="specialistHint" class="text-sm text-gray-600 hidden"></p>
+                        <div id="heatmapContainer" class="hidden">
+                            <h3 class="font-semibold mb-2"><i class="fas fa-bullseye text-red-500 mr-1"></i> Grad-CAM Heatmap</h3>
+                            <img id="heatmapImage" class="w-full rounded-lg border" alt="Heatmap">
+                            <p class="text-xs text-gray-500 mt-1">Highlighted regions influenced the AI decision.</p>
+                        </div>
+                        <button id="downloadReport" class="w-full py-3 rounded-lg text-white font-medium" style="background: var(--navy);">
+                            <i class="fas fa-file-pdf mr-2"></i> Download PDF Report
+                        </button>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="bg-dark-navy text-white py-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-3 gap-8">
-            <div>
-                <h3 class="font-bold mb-4">MINDAEYE</h3>
-                <p class="text-sm">Advanced AI-powered medical image analysis for precise diagnostics</p>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-4">Quick Links</h4>
-                <ul class="space-y-2">
-                    <li><a href="/" class="hover:text-primary-blue">Home</a></li>
-                    <li><a href="/services" class="hover:text-primary-blue">Services</a></li>
-                    <li><a href="/upload" class="hover:text-primary-blue">Upload Image</a></li>
-                    <li><a href="/about" class="hover:text-primary-blue">About Us</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-4">Contact Us</h4>
-                <p class="text-sm">Email: support@mindaye.com</p>
-                <p class="text-sm">Phone: +123-456-7890</p>
-            </div>
-        </div>
-        <div class="text-center mt-8 text-sm text-gray-400">
-            © 2026 MINDAEYE. All rights reserved.
-        </div>
-    </footer>
-
     <script>
         const fileInput = document.getElementById('fileInput');
         const dropZone = document.getElementById('dropZone');
-        const uploadForm = document.getElementById('uploadForm');
+        const uploadContent = document.getElementById('uploadContent');
         const previewContainer = document.getElementById('previewContainer');
         const imagePreview = document.getElementById('imagePreview');
-        const fileNameDisplay = document.getElementById('fileName');
-        const uploadContent = document.getElementById('uploadContent');
-        const changeFileBtn = document.getElementById('changeFile');
-        const resultsSection = document.getElementById('resultsSection');
-        const diagnosisResult = document.getElementById('diagnosisResult');
-        const resultImage = document.getElementById('resultImage');
         const submitBtn = document.getElementById('submitBtn');
 
-        // Toggle mobile menu
-        document.getElementById("mobile-menu-toggle").addEventListener("click", () => {
-            const menu = document.getElementById("mobile-menu");
-            menu.classList.toggle("hidden");
-        });
-
-        // Drag-and-drop events
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('drag-active');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('drag-active');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-active'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-active'));
+        dropZone.addEventListener('drop', e => {
             e.preventDefault();
             dropZone.classList.remove('drag-active');
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                showPreview(file);
+            if (e.dataTransfer.files[0]) {
                 fileInput.files = e.dataTransfer.files;
+                showPreview(e.dataTransfer.files[0]);
             }
         });
-
-        fileInput.addEventListener('change', () => {
-            const file = fileInput.files[0];
-            if (file) showPreview(file);
-        });
-
-        changeFileBtn.addEventListener('click', () => {
-            fileInput.click();
-        });
+        fileInput.addEventListener('change', () => { if (fileInput.files[0]) showPreview(fileInput.files[0]); });
+        document.getElementById('changeFile').addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
 
         function showPreview(file) {
-            // For DICOM files, the preview might not work perfectly in a standard img tag without external parsing (like cornerstone.js), 
-            // but we can still show the filename and UI state change.
-            if (file.name.toLowerCase().endsWith('.dcm') || file.name.toLowerCase().endsWith('.dicom')) {
-                imagePreview.src = "/static/images/dicom-placeholder.png"; // Optional: Add a placeholder for DICOM if you have one
-                imagePreview.alt = "DICOM File Selected";
-            } else {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    imagePreview.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-            fileNameDisplay.textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = e => { imagePreview.src = e.target.result; };
+            reader.readAsDataURL(file);
+            document.getElementById('fileName').textContent = file.name;
             previewContainer.classList.remove('hidden');
             uploadContent.classList.add('hidden');
         }
 
-        uploadForm.addEventListener('submit', async (e) => {
+        function renderProbabilityBars(probabilities, topClass) {
+            const section = document.getElementById('probabilitySection');
+            const container = document.getElementById('probabilityBars');
+            container.innerHTML = '';
+            const sorted = Object.entries(probabilities).sort((a, b) => b[1] - a[1]);
+            sorted.forEach(([label, pct]) => {
+                const isTop = label === topClass;
+                const row = document.createElement('div');
+                row.innerHTML = `
+                    <div class="flex justify-between text-xs mb-0.5">
+                        <span class="${isTop ? 'font-bold' : ''}" style="color: ${isTop ? 'var(--navy)' : '#666'}">${label.replace(/_/g, ' ')}</span>
+                        <span class="font-medium">${pct}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="h-2 rounded-full transition-all duration-700" style="background: ${isTop ? 'var(--navy)' : 'var(--primary)'}; opacity: ${isTop ? '1' : '0.55'}; width: 0%;" data-width="${pct}"></div>
+                    </div>`;
+                container.appendChild(row);
+            });
+            section.classList.remove('hidden');
+            setTimeout(() => {
+                container.querySelectorAll('[data-width]').forEach(bar => {
+                    bar.style.width = bar.dataset.width + '%';
+                });
+            }, 80);
+        }
+
+        document.getElementById('uploadForm').addEventListener('submit', async e => {
             e.preventDefault();
             const file = fileInput.files[0];
-            const analysisType = document.getElementById('analysisType').value;
+            if (!file) { alert('Please select an image.'); return; }
 
-            if (!file) {
-                alert('Please select an image or DICOM scan to upload.');
-                return;
-            }
-
+            const type = document.getElementById('analysisType').value;
             const formData = new FormData();
-            formData.append('image', file); 
-            
+            formData.append('image', file);
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Analyzing...';
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('resultImage').src = imagePreview.src;
+            document.getElementById('confidenceContainer').classList.add('hidden');
+            document.getElementById('probabilitySection').classList.add('hidden');
+            document.getElementById('heatmapContainer').classList.add('hidden');
+            document.getElementById('specialistHint').classList.add('hidden');
+
             try {
-                // UI Loading State
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Analyzing with AI...';
-                
-                diagnosisResult.innerHTML = '<p class="text-gray-text font-medium text-center">Processing Clinical Data...</p>';
-                resultImage.src = imagePreview.src;
-                resultsSection.classList.remove('hidden');
-                
-                // Hide dynamic phase 2 containers during reload
-                document.getElementById('confidenceContainer').classList.add('hidden');
-                document.getElementById('heatmapContainer').classList.add('hidden');
-
-                // Make the API Call
-                const endpoint = `/predict/${analysisType}`;
-                const response = await axios.post(endpoint, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-
-                const result = response.data;
-                
-                // --- PHASE 2 DATA MAPPING ---
-                // Support both the old format (prediction: 'Glioma') and new format (result: 'Glioma', confidence: 95)
-                const predictionText = result.result || result.prediction || 'Unknown Classification';
-                const confidenceScore = result.confidence || null;
-                const heatmapBase64 = result.heatmap_data || null;
-
-                // Update Classification Text
-                diagnosisResult.innerHTML = `
-                    <p class="text-dark-navy text-2xl font-bold uppercase tracking-wide text-center">
-                        ${predictionText.replace('_', ' ')}
-                    </p>`;
-                
-                // Update Confidence Bar if backend provided it
-                if (confidenceScore) {
+                const { data } = await axios.post(`/predict/${type}`, formData);
+                document.getElementById('diagnosisResult').textContent = (data.result || 'Unknown').replace(/_/g, ' ');
+                document.getElementById('modelLabel').textContent = data.model_label || '';
+                if (data.confidence) {
                     document.getElementById('confidenceContainer').classList.remove('hidden');
-                    document.getElementById('confidenceText').textContent = `${confidenceScore}%`;
-                    
-                    // Small delay to allow CSS transition to animate
-                    setTimeout(() => {
-                        document.getElementById('confidenceBar').style.width = `${confidenceScore}%`;
-                    }, 100);
+                    document.getElementById('confidenceText').textContent = data.confidence + '%';
+                    setTimeout(() => { document.getElementById('confidenceBar').style.width = data.confidence + '%'; }, 50);
                 }
-
-                // Render Grad-CAM Heatmap if backend provided it
-                if (heatmapBase64) {
+                if (data.probabilities) {
+                    renderProbabilityBars(data.probabilities, data.result);
+                }
+                if (data.recommended_specialist) {
+                    const hint = document.getElementById('specialistHint');
+                    hint.textContent = 'Recommended specialist: ' + data.recommended_specialist;
+                    hint.classList.remove('hidden');
+                }
+                if (data.heatmap_data) {
                     document.getElementById('heatmapContainer').classList.remove('hidden');
-                    document.getElementById('heatmapContainer').classList.add('flex');
-                    document.getElementById('heatmapImage').src = heatmapBase64;
+                    document.getElementById('heatmapImage').src = data.heatmap_data;
                 }
-
-                // Store the diagnosis result globally for the report download
-                window.latest_result = predictionText;
-                
-            } catch (error) {
-                console.error(error);
-                diagnosisResult.innerHTML = '<p class="text-red-500 font-medium text-center">An error occurred during analysis. Please try again later.</p>';
+            } catch (err) {
+                const msg = err.response?.data?.error || 'Analysis failed. Please try again.';
+                document.getElementById('diagnosisResult').textContent = 'Error';
+                document.getElementById('modelLabel').textContent = msg;
             } finally {
-                // Restore Button State
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Analyze Image';
+                submitBtn.textContent = 'Analyze Image';
             }
         });
 
-        // Download report
         document.getElementById('downloadReport').addEventListener('click', () => {
             window.location.href = '/download_report';
         });

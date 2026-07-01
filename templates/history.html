@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History — MINDAEYE</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #0D6EFD; --light: #E9F3FF; --navy: #0C2D62; }
+        body { font-family: Arial, sans-serif; }
+        .badge-mind { background: #E8EAF6; color: #3949AB; }
+        .badge-eye { background: #E3F2FD; color: #1565C0; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <nav class="fixed top-0 w-full bg-white shadow z-50">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/" class="text-2xl font-bold" style="color: var(--primary);">MINDAEYE</a>
+            <div class="flex items-center gap-4 text-sm">
+                <a href="/" class="hover:text-blue-600">Home</a>
+                <a href="/upload" class="hover:text-blue-600">Analyze</a>
+                <a href="/history" class="font-medium" style="color: var(--primary);">History</a>
+                <span class="text-gray-500">{{ current_user.name if current_user else '' }}</span>
+                <a href="/logout" class="hover:text-blue-600">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-24 pb-16 px-4 max-w-5xl mx-auto">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold" style="color: var(--navy);">Prediction History</h1>
+            <p class="text-gray-500 text-sm mt-1">All your MIND and EYE analyses saved in SQLite</p>
+        </div>
+
+        {% if predictions %}
+        <div class="space-y-4">
+            {% for p in predictions %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+                    <div>
+                        {% if p.model_type == 'brain_tumor' %}
+                        <span class="badge-mind text-xs font-semibold px-2 py-1 rounded-full uppercase">MIND</span>
+                        {% else %}
+                        <span class="badge-eye text-xs font-semibold px-2 py-1 rounded-full uppercase">EYE</span>
+                        {% endif %}
+                        <span class="ml-2 text-sm text-gray-500">{{ p.created_at.strftime('%Y-%m-%d %H:%M UTC') }}</span>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-lg font-bold uppercase" style="color: var(--navy);">{{ p.result.replace('_', ' ') }}</p>
+                        <p class="text-sm font-medium" style="color: var(--primary);">{{ p.confidence }}% confidence</p>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mb-3">{{ p.model_label }}</p>
+                <div class="space-y-1.5">
+                    {% for label, pct in p.sorted_probabilities() %}
+                    <div>
+                        <div class="flex justify-between text-xs mb-0.5">
+                            <span class="{{ 'font-semibold' if label == p.result else '' }}">{{ label.replace('_', ' ') }}</span>
+                            <span>{{ pct }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                            <div class="h-1.5 rounded-full" style="width: {{ pct }}%; background: {{ 'var(--navy)' if label == p.result else 'var(--primary)' }}; opacity: {{ '1' if label == p.result else '0.55' }};"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white rounded-xl shadow-sm p-12 text-center">
+            <i class="fas fa-history text-4xl text-gray-300 mb-4"></i>
+            <p class="text-gray-500 mb-4">No analyses yet.</p>
+            <a href="/upload" class="inline-block px-6 py-2 rounded-lg text-white text-sm" style="background: var(--primary);">
+                Run your first analysis
+            </a>
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>

@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+=======
+>>>>>>>
 <div align="center">
 
 # 👁️ MindAye
@@ -279,10 +282,80 @@ MIND-A-EYE/
 │   └── ...
 ├── static/                   # CSS and assets
 └── reports/                  # Generated PDFs (created at runtime)
+=======
+# MINDAEYE
+
+**MIND** + **EYE** — AI medical image analysis in one Flask app.
+
+| Name | Domain | Input | Model |
+|------|--------|-------|-------|
+| **MIND** | Brain tumor | MRI (JPG/PNG) | EfficientNet-B0, 4 classes |
+| **EYE** | Diabetic retinopathy | Fundus photo (JPG/PNG) | EfficientNet-B0, 5 stages |
+
+> Decision-support tool for portfolio and research. Not a licensed medical device.
+
+---
+
+## Features
+
+- Dual PyTorch models with lazy loading (loads only the model you use)
+- Softmax confidence scores
+- **Full class probability distribution** (all classes, not just top-1)
+- **Prediction history** per user (SQLite)
+- Grad-CAM heatmaps (explainable AI)
+- Simple PDF report download
+- User signup / login (SQLite)
+
+---
+
+## Project structure
+
+```
+MIND-A-EYE/
+├── app.py                      # Flask backend (~280 lines)
+├── models/
+│   ├── dr_model.pth            # EYE model weights (required)
+│   └── brain_tumor.pth         # MIND model weights (required)
+├── templates/
+│   ├── homepage.html
+│   ├── upload.html
+│   ├── history.html
+│   ├── login.html
+│   └── signup.html
+├── Brain_tumor.ipynb           # Training notebook
+├── diabetes_ratinopathy.ipynb  # Training notebook
+├── requirements.txt
+└── render.yaml                 # Deploy config
 ```
 
 ---
 
+## Quick start
+
+```bash
+cd MIND-A-EYE
+python -m venv venv
+venv\Scripts\activate        # Windows
+pip install -r requirements.txt
+
+# Place your .pth files in models/
+python app.py
+```
+
+Open http://localhost:5000 → Sign up → Upload → Analyze
+
+### Environment variables (optional)
+
+```env
+SECRET_KEY=your-secret-key
+DATABASE_URL=sqlite:///mindaye.db
+PORT=5000
+>>>>>>> 1737881 (Update Flask application and UI)
+```
+
+---
+
+<<<<<<< HEAD
 ## 🔌 API overview
 
 Protected routes require an active login session.
@@ -350,3 +423,75 @@ MindAye / NeuroVision AI provides **preliminary, AI-generated analysis for educa
 *© 2025 MindAye. All rights reserved.*
 
 </div>
+=======
+## API
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/predict/dr` | Yes | EYE — diabetic retinopathy |
+| POST | `/predict/brain_tumor` | Yes | MIND — brain tumor |
+| POST | `/api/signup` | No | Register |
+| POST | `/api/login` | No | Login |
+| GET | `/history` | Yes | Past predictions with probability bars |
+| GET | `/download_report` | Yes | PDF report |
+
+**Predict request:** `multipart/form-data` with field `image` (JPG/PNG)
+
+**Predict response:**
+```json
+{
+  "result": "Mild",
+  "confidence": 87.5,
+  "probabilities": {
+    "Mild": 87.5,
+    "Moderate": 5.2,
+    "No_DR": 3.1,
+    "Proliferate_DR": 2.0,
+    "Severe": 2.2
+  },
+  "prediction_id": "uuid-here",
+  "model_type": "dr",
+  "model_label": "Diabetic Retinopathy (Eye)",
+  "recommended_specialist": "Ophthalmologist",
+  "heatmap_data": "data:image/jpeg;base64,..."
+}
+```
+
+---
+
+## Model classes
+
+**EYE (Diabetic Retinopathy):** `No_DR`, `Mild`, `Moderate`, `Severe`, `Proliferate_DR`
+
+**MIND (Brain Tumor):** `glioma`, `meningioma`, `pituitary`, `notumor`
+
+---
+
+## Deploy (Render)
+
+1. Push repo with model weights (Git LFS recommended)
+2. Connect to Render — uses `render.yaml`
+3. Set `SECRET_KEY` in Render dashboard
+
+```bash
+gunicorn app:app --timeout 120
+```
+
+---
+
+## Interview talking points
+
+1. **Why MINDAEYE?** One brand, two domains — brain (MIND) and eye (EYE)
+2. **Architecture:** Flask serves EfficientNet-B0; same backbone, different classifier heads
+3. **Lazy loading:** Models cached on first request to save RAM
+4. **XAI:** Grad-CAM shows which image regions drove the prediction
+5. **Full softmax output:** All class probabilities stored and visualized — not just argmax
+6. **Prediction history:** SQLite audit trail per user
+7. **Limitations:** Preliminary AI only; not a licensed medical device
+
+---
+
+## Author
+
+Mohit Sharma — Data Science / ML portfolio project
+>>>>>>> 1737881 (Update Flask application and UI)

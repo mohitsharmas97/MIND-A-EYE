@@ -1,0 +1,6 @@
+# Place trained model weights here:
+#   dr_model.pth        — EYE (diabetic retinopathy)
+#   brain_tumor.pth     — MIND (brain tumor)
+#
+# Train using the Jupyter notebooks in the project root,
+# then copy the saved .pth files into this folder.

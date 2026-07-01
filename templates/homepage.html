@@ -1,310 +1,98 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MINDAEYE - AI Medical Image Analysis</title>
+    <title>MINDAEYE — AI Medical Imaging</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-blue: #0D6EFD;
-            --light-blue: #E9F3FF;
-            --dark-navy: #0C2D62;
-            --gray-text: #666666;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-        }
-        .bg-primary-light-blue {
-            background-color: var(--light-blue);
-        }
-        .text-dark-navy {
-            color: var(--dark-navy);
-        }
-        .hero-gradient {
-            background: linear-gradient(135deg, #ffffff 0%, var(--light-blue) 100%);
-        }
-        .btn-primary {
-            background-color: var(--primary-blue);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
-            font-weight: 500;
-            transition: opacity 0.3s;
-        }
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-        .feature-card {
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        }
+        :root { --primary: #0D6EFD; --light: #E9F3FF; --navy: #0C2D62; }
+        body { font-family: Arial, sans-serif; }
+        .hero { background: linear-gradient(135deg, #fff 0%, var(--light) 100%); }
+        .btn-primary { background: var(--primary); color: #fff; padding: 0.75rem 1.5rem; border-radius: 9999px; font-weight: 500; }
+        .btn-outline { border: 2px solid var(--primary); color: var(--primary); padding: 0.75rem 1.5rem; border-radius: 9999px; }
     </style>
 </head>
-<body>
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center">
-                    <a href="/" class="text-2xl font-bold" style="color: var(--primary-blue);">MINDAEYE</a>
-                </div>
-                
-                <div class="hidden md:flex space-x-6 items-center">
-                    <a href="/" class="text-dark-navy hover:text-blue-600">Home</a>
-                    <a href="/about" class="text-dark-navy hover:text-blue-600">About</a>
-                    <a href="/services" class="text-dark-navy hover:text-blue-600">Services</a>
-                    <a href="/upload" class="text-dark-navy hover:text-blue-600">Upload</a>
-                    <a href="/consult" class="text-dark-navy hover:text-blue-600">Consult</a>
-                    <a href="/report" class="text-dark-navy hover:text-blue-600">Report</a>
-                    <a href="/chat" class="text-dark-navy hover:text-blue-600">Ask AI</a>
-                    
-                    <!-- Profile Dropdown -->
-                    <div class="relative ml-4">
-                        <button id="profile-menu-button" class="flex items-center focus:outline-none">
-                            <div class="w-8 h-8 rounded-full bg-primary-light-blue flex items-center justify-center">
-                                <i class="fas fa-user text-primary-blue"></i>
-                            </div>
-                            <span class="ml-2 text-dark-navy">Profile</span>
-                            <i class="fas fa-chevron-down ml-1 text-sm text-dark-navy"></i>
-                        </button>
-                        
-                        <div id="profile-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                            <a href="/profile" class="block px-4 py-2 text-sm text-dark-navy hover:bg-primary-light-blue">My Profile</a>
-                            <a href="/settings" class="block px-4 py-2 text-sm text-dark-navy hover:bg-primary-light-blue">Settings</a>
-                            <a href="/logout" class="block px-4 py-2 text-sm text-dark-navy hover:bg-primary-light-blue">Logout</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="md:hidden">
-                    <button id="mobile-menu-toggle" class="text-dark-navy focus:outline-none">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
+<body class="bg-white text-gray-700">
+    <nav class="fixed top-0 w-full bg-white shadow z-50">
+        <div class="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="/" class="text-2xl font-bold" style="color: var(--primary);">MINDAEYE</a>
+            <div class="flex items-center gap-4 text-sm">
+                <a href="/upload" class="hover:text-blue-600">Analyze</a>
+                {% if current_user %}
+                    <a href="/history" class="hover:text-blue-600">History</a>
+                    <span class="text-gray-500">Hi, {{ current_user.name }}</span>
+                    <a href="/logout" class="hover:text-blue-600">Logout</a>
+                {% else %}
+                    <a href="/login" class="hover:text-blue-600">Login</a>
+                    <a href="/signup" class="btn-primary text-sm">Sign Up</a>
+                {% endif %}
             </div>
-        </div>
-    
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pt-2 pb-3 space-y-1">
-            <a href="/" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Home</a>
-            <a href="/about" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">About</a>
-            <a href="/services" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Services</a>
-            <a href="/upload" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Upload</a>
-            <a href="/consult" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Consult</a>
-            <a href="/report" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Report</a>
-            <a href="/profile" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Profile</a>
-            <a href="/chat" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Ask AI</a>
-        </div>
-    </nav>
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white px-4 pt-2 pb-3 space-y-1">
-            <a href="/" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Home</a>
-            <a href="/about" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">About</a>
-            <a href="/services" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Services</a>
-            <a href="/upload" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Upload</a>
-            <a href="/consult" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Consult</a>
-            <a href="/report" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Report</a>
-            <a href="/signup" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Sign Up</a>
-            <a href="/chat" class="block text-dark-navy hover:bg-light-blue px-3 py-2 rounded-md">Ask AI</a>
         </div>
     </nav>
 
-    <!-- Main Content -->
     <main class="pt-16">
-        <!-- Hero Section -->
-        <section class="relative hero-gradient pt-16 pb-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="w-full max-w-3xl mx-auto text-center">
-                    <h1 class="text-4xl md:text-5xl font-extrabold text-dark-navy mb-4">
-                        AI-Powered Medical Diagnosis
-                    </h1>
-                    <p class="text-gray-text text-lg mb-6">
-                        MINDAEYE uses advanced deep learning to analyze medical images for accurate, rapid diagnosis of conditions like diabetic retinopathy and brain tumors.
-                    </p>
-                    <div class="flex flex-wrap gap-4 justify-center">
-                        <a href="/signup" class="btn-primary inline-block">
-                            Create Account
-                        </a>
-                        <a href="/upload" class="border-2 px-6 py-3 rounded-full hover:bg-gray-50 transition inline-block" style="border-color: var(--primary-blue); color: var(--primary-blue);">
-                            Try Demo
-                        </a>
+        <section class="hero py-20 text-center px-4">
+            <p class="text-sm font-semibold tracking-widest uppercase mb-3" style="color: var(--primary);">MIND + EYE</p>
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4" style="color: var(--navy);">
+                AI-Powered Medical Image Analysis
+            </h1>
+            <p class="max-w-2xl mx-auto text-lg mb-8">
+                <strong>MIND</strong> analyzes brain MRI scans for tumor classification.
+                <strong>EYE</strong> stages diabetic retinopathy from fundus images.
+                One platform, two deep-learning models.
+            </p>
+            <div class="flex gap-4 justify-center flex-wrap">
+                {% if current_user %}
+                    <a href="/upload" class="btn-primary">Start Analysis</a>
+                {% else %}
+                    <a href="/signup" class="btn-primary">Get Started</a>
+                    <a href="/login" class="btn-outline">Login</a>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="py-16 bg-white px-4">
+            <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
+                <div class="border rounded-xl p-8 shadow-sm hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4" style="background: var(--light);">
+                        <i class="fas fa-brain text-xl" style="color: var(--primary);"></i>
                     </div>
+                    <h2 class="text-xl font-bold mb-2" style="color: var(--navy);">MIND — Brain Tumor</h2>
+                    <p class="mb-4">EfficientNet-B0 classifier for MRI scans. Detects glioma, meningioma, pituitary tumor, or no tumor.</p>
+                    <p class="text-sm text-gray-500"><i class="fas fa-check text-green-500 mr-1"></i> Grad-CAM explainability &nbsp; <i class="fas fa-check text-green-500 mr-1"></i> Confidence score</p>
+                </div>
+                <div class="border rounded-xl p-8 shadow-sm hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center mb-4" style="background: var(--light);">
+                        <i class="fas fa-eye text-xl" style="color: var(--primary);"></i>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2" style="color: var(--navy);">EYE — Diabetic Retinopathy</h2>
+                    <p class="mb-4">EfficientNet-B0 classifier for retinal fundus photos. Stages from No DR to Proliferative DR.</p>
+                    <p class="text-sm text-gray-500"><i class="fas fa-check text-green-500 mr-1"></i> 5-stage classification &nbsp; <i class="fas fa-check text-green-500 mr-1"></i> PDF report download</p>
                 </div>
             </div>
         </section>
 
-        <!-- How It Works Section -->
-        <section class="py-16 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl font-bold text-center text-dark-navy mb-12">How MINDAEYE Works</h2>
-                <div class="grid md:grid-cols-4 gap-8">
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-primary-light-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-xl font-bold" style="color: var(--primary-blue);">1</span>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2 text-dark-navy">Sign Up</h3>
-                        <p class="text-gray-text">Create your MINDAEYE account to get started</p>
-                    </div>
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-primary-light-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-xl font-bold" style="color: var(--primary-blue);">2</span>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2 text-dark-navy">Upload Image</h3>
-                        <p class="text-gray-text">Upload your medical image for analysis</p>
-                    </div>
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-primary-light-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-xl font-bold" style="color: var(--primary-blue);">3</span>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2 text-dark-navy">AI Analysis</h3>
-                        <p class="text-gray-text">Our advanced AI processes and analyzes the image</p>
-                    </div>
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-primary-light-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                            <span class="text-xl font-bold" style="color: var(--primary-blue);">4</span>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2 text-dark-navy">Get Results</h3>
-                        <p class="text-gray-text">Receive detailed diagnostic report and recommendations</p>
-                    </div>
-                </div>
-                <div class="text-center mt-12">
-                    <a href="/signup" class="btn-primary inline-block">
-                        Create Your Account
-                    </a>
+        <section class="py-16 px-4" style="background: var(--light);">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-2xl font-bold mb-8" style="color: var(--navy);">How It Works</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+                    <div><span class="text-2xl font-bold" style="color: var(--primary);">1</span><p class="mt-2">Sign up / Login</p></div>
+                    <div><span class="text-2xl font-bold" style="color: var(--primary);">2</span><p class="mt-2">Choose MIND or EYE</p></div>
+                    <div><span class="text-2xl font-bold" style="color: var(--primary);">3</span><p class="mt-2">Upload JPG/PNG</p></div>
+                    <div><span class="text-2xl font-bold" style="color: var(--primary);">4</span><p class="mt-2">View history + PDF</p></div>
                 </div>
             </div>
         </section>
 
-        <!-- Features Section -->
-        <section class="py-16 bg-primary-light-blue">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="text-3xl font-bold text-center text-dark-navy mb-12">Our Medical Services</h2>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="bg-white p-6 rounded-lg shadow-md text-center feature-card">
-                        <div class="w-16 h-16 bg-primary-light-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8" style="color: var(--primary-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2 text-dark-navy">Diabetic Retinopathy</h3>
-                        <p class="text-gray-text mb-4">Advanced AI detection of diabetic eye disease stages from mild to proliferative</p>
-                        <a href="/upload" class="text-sm font-medium inline-block" style="color: var(--primary-blue);">Try It Now →</a>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md text-center feature-card">
-                        <div class="w-16 h-16 bg-primary-light-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8" style="color: var(--primary-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.871 4A17.926 17.926 0 003 12c0 2.874.673 5.59 1.871 8m14.13 0a17.926 17.926 0 001.87-8c0-2.874-.673-5.59-1.87-8M9 9h1.246a1 1 0 01.961.725l1.586 5.55a1 1 0 00.961.725H15m1-7h-.08a2 2 0 00-1.519.698L9.6 15.302A2 2 0 018.08 16H8"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2 text-dark-navy">Brain Tumor</h3>
-                        <p class="text-gray-text mb-4">Intelligent classification of brain tumor types including glioma, meningioma, and pituitary tumors</p>
-                        <a href="/upload" class="text-sm font-medium inline-block" style="color: var(--primary-blue);">Try It Now →</a>
-                    </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md text-center feature-card">
-                        <div class="w-16 h-16 bg-primary-light-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8" style="color: var(--primary-blue);" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-semibold mb-2 text-dark-navy">Detailed Reports</h3>
-                        <p class="text-gray-text mb-4">Download comprehensive diagnostic reports with professional medical insights</p>
-                        <a href="/report" class="text-sm font-medium inline-block" style="color: var(--primary-blue);">Learn More →</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="py-16 bg-white">
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h2 class="text-3xl font-bold text-dark-navy mb-6">Ready to Get Started?</h2>
-                <p class="text-gray-text text-lg mb-8 max-w-2xl mx-auto">
-                    Join thousands of healthcare professionals using MINDAEYE for faster, more accurate diagnoses
-                </p>
-                <div class="flex justify-center gap-4 flex-wrap">
-                    <a href="/signup" class="btn-primary inline-block">
-                        Create Free Account
-                    </a>
-                    <a href="/about" class="border-2 px-6 py-3 rounded-full hover:bg-gray-50 transition inline-block" style="border-color: var(--primary-blue); color: var(--primary-blue);">
-                        Learn More
-                    </a>
-                </div>
-            </div>
+        <section class="py-12 px-4 text-center text-sm text-gray-500">
+            <p><strong>Disclaimer:</strong> MINDAEYE is a decision-support tool for research and portfolio purposes. Not a licensed medical device. Always consult a healthcare professional.</p>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-dark-navy text-white py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-3 gap-8">
-            <div>
-                <h3 class="font-bold mb-4">MINDAEYE</h3>
-                <p class="text-sm">Advanced AI-powered medical image analysis for precise diagnostics</p>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-4">Quick Links</h4>
-                <ul class="space-y-2">
-                    <li><a href="/" class="hover:text-primary-blue">Home</a></li>
-                    <li><a href="/services" class="hover:text-primary-blue">Services</a></li>
-                    <li><a href="/upload" class="hover:text-primary-blue">Upload Image</a></li>
-                    <li><a href="/signup" class="hover:text-primary-blue">Sign Up</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-4">Contact Us</h4>
-                <p>Email: support@mindaeye.com</p>
-                <p>Phone: +1 (555) 123-4567</p>
-            </div>
-        </div>
-        <div class="text-center mt-6">
-            <p>&copy; 2025 MINDAEYE. All rights reserved.</p>
-        </div>
+    <footer class="py-6 text-center text-sm text-white" style="background: var(--navy);">
+        &copy; 2026 MINDAEYE — Mohit Sharma
     </footer>
-
-    <!-- JavaScript for Mobile Menu Toggle -->
-   <!-- JavaScript for Mobile Menu Toggle and Profile Dropdown -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mobile Menu Toggle
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        if (mobileMenuToggle) {
-            mobileMenuToggle.addEventListener('click', function() {
-                const mobileMenu = document.getElementById('mobile-menu');
-                if (mobileMenu) {
-                    mobileMenu.classList.toggle('hidden');
-                }
-            });
-        }
-
-        // Profile Dropdown Toggle
-        const profileMenuButton = document.getElementById('profile-menu-button');
-        if (profileMenuButton) {
-            profileMenuButton.addEventListener('click', function() {
-                const profileMenu = document.getElementById('profile-menu');
-                if (profileMenu) {
-                    profileMenu.classList.toggle('hidden');
-                }
-            });
-        }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const profileMenu = document.getElementById('profile-menu');
-            const profileMenuButton = document.getElementById('profile-menu-button');
-            
-            if (profileMenu && !profileMenu.contains(event.target) && 
-                profileMenuButton && !profileMenuButton.contains(event.target)) {
-                profileMenu.classList.add('hidden');
-            }
-        });
-    });
-</script>
 </body>
 </html>

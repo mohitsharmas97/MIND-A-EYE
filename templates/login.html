@@ -3,151 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - NeuroVision AI</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f5f8fa;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #34495e;
-        }
-        input[type="email"],
-        input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        .error-message {
-            color: #e74c3c;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-        .success-message {
-            color: #2ecc71;
-            margin-top: 5px;
-            font-size: 14px;
-        }
-        .signup-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .signup-link a {
-            color: #3498db;
-            text-decoration: none;
-        }
-        .signup-link a:hover {
-            text-decoration: underline;
-        }
-        .remember-me {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .remember-me input {
-            margin-right: 10px;
-        }
-    </style>
+    <title>Login — MINDAEYE</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>Log In</h1>
-        <div id="message-container"></div>
-        <form id="login-form">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 class="text-2xl font-bold text-center mb-1" style="color: #0D6EFD;">MINDAEYE</h1>
+        <p class="text-center text-gray-500 text-sm mb-6">MIND + EYE medical imaging AI</p>
+        <div id="message-container" class="mb-4 text-sm"></div>
+        <form id="login-form" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1">Email</label>
+                <input type="email" id="email" required class="w-full border rounded-lg px-3 py-2">
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+            <div>
+                <label class="block text-sm font-medium mb-1">Password</label>
+                <input type="password" id="password" required class="w-full border rounded-lg px-3 py-2">
             </div>
-            <div class="remember-me">
-                <input type="checkbox" id="remember" name="remember">
-                <label for="remember">Remember me</label>
-            </div>
-            <button type="submit">Log In</button>
+            <label class="flex items-center text-sm">
+                <input type="checkbox" id="remember" class="mr-2"> Remember me
+            </label>
+            <button type="submit" class="w-full py-2 rounded-lg text-white font-medium" style="background: #0D6EFD;">Log In</button>
         </form>
-        <div class="signup-link">
-            Don't have an account? <a href="/signup">Sign Up</a>
-        </div>
+        <p class="text-center text-sm mt-4">No account? <a href="/signup" style="color: #0D6EFD;">Sign up</a></p>
+        <p class="text-center text-sm mt-2"><a href="/" class="text-gray-500">← Back to home</a></p>
     </div>
-
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(e) {
+        document.getElementById('login-form').addEventListener('submit', async e => {
             e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const remember = document.getElementById('remember').checked;
-            const messageContainer = document.getElementById('message-container');
-            
-            // Send data to server
-            fetch('/login', {
+            const res = await fetch('/api/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    email: email,
-                    password: password,
-                    remember: remember
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    messageContainer.innerHTML = '<p class="success-message">' + data.message + '</p>';
-                    setTimeout(function() {
-                        window.location.href = data.redirect || '/';
-                    }, 1000);
-                } else {
-                    messageContainer.innerHTML = '<p class="error-message">' + data.message + '</p>';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                messageContainer.innerHTML = '<p class="error-message">An error occurred. Please try again.</p>';
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value,
+                    remember: document.getElementById('remember').checked,
+                }),
             });
+            const data = await res.json();
+            const box = document.getElementById('message-container');
+            if (data.success) {
+                box.innerHTML = '<p class="text-green-600">' + data.message + '</p>';
+                setTimeout(() => window.location.href = data.redirect || '/upload', 800);
+            } else {
+                box.innerHTML = '<p class="text-red-600">' + data.message + '</p>';
+            }
         });
     </script>
 </body>

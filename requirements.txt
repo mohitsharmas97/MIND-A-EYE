@@ -1,10 +1,12 @@
 flask
-fpdf
+flask-sqlalchemy
+fpdf2
 torch
 torchvision
 Pillow
-google-generativeai
 python-dotenv
 werkzeug
-flask_mail
 gunicorn
+numpy
+grad-cam
+opencv-python-headless
