@@ -1,12 +1,13 @@
-flask
-flask-sqlalchemy
-fpdf2
-torch
-torchvision
-Pillow
-python-dotenv
-werkzeug
-gunicorn
-numpy
-grad-cam
-opencv-python-headless
+# Render / production — CPU-only PyTorch (no CUDA, ~500MB less disk/RAM)
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+flask>=3.0
+flask-sqlalchemy>=3.1
+fpdf2>=2.7
+torch==2.5.1
+torchvision==0.20.1
+Pillow>=10.0
+python-dotenv>=1.0
+werkzeug>=3.0
+gunicorn>=22.0
+numpy>=1.24,<2.0

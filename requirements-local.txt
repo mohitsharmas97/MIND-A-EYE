@@ -1,0 +1,4 @@
+# Local dev extras (Grad-CAM / explainability) — not installed on Render
+-r requirements.txt
+grad-cam>=1.5.0
+opencv-python-headless>=4.8

@@ -1,7 +1,15 @@
 services:
   - type: web
     name: mindaye
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --timeout 120 --bind 0.0.0.0:$PORT
+    runtime: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 1 --timeout 120
     healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.11"
+      - key: ENABLE_GRADCAM
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true

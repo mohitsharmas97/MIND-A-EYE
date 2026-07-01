@@ -12,21 +12,17 @@ import uuid
 from datetime import datetime, timedelta
 from functools import wraps
 
-import numpy as np
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
 from dotenv import load_dotenv
 from flask import Flask, flash, jsonify, redirect, render_template, request, send_file, session, url_for
 from flask_sqlalchemy import SQLAlchemy
 from fpdf import FPDF
 from PIL import Image
-from pytorch_grad_cam import GradCAM
-from pytorch_grad_cam.utils.image import show_cam_on_image
-from torchvision import models, transforms
 from werkzeug.security import check_password_hash, generate_password_hash
 
 load_dotenv()
+
+# Keep matplotlib from building font cache at import (Grad-CAM pulls it in)
+os.environ.setdefault("MPLBACKEND", "Agg")
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "mindaye-dev-secret-change-in-production")
@@ -38,7 +34,18 @@ db = SQLAlchemy(app)
 
 # ── Model config ──────────────────────────────────────────────────────────────
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+ENABLE_GRADCAM = os.getenv("ENABLE_GRADCAM", "true").lower() == "true"
+
+_device = None
+
+
+def get_device():
+    global _device
+    if _device is None:
+        import torch
+        torch.set_num_threads(1)
+        _device = torch.device("cpu")
+    return _device
 
 MODEL_CONFIG = {
     "dr": {
@@ -60,14 +67,17 @@ MODEL_CONFIG = {
 IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
-TRANSFORM = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
-])
-
 _model_cache = {}
 _latest_result = {}
+
+
+def get_transform():
+    from torchvision import transforms
+    return transforms.Compose([
+        transforms.Resize((224, 224)),
+        transforms.ToTensor(),
+        transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
+    ])
 
 
 # ── Database ──────────────────────────────────────────────────────────────────
@@ -132,14 +142,19 @@ def load_model(model_type):
     if model_type in _model_cache:
         return _model_cache[model_type]
 
+    import torch
+    import torch.nn as nn
+    from torchvision import models
+
+    device = get_device()
     cfg = MODEL_CONFIG[model_type]
     model = models.efficientnet_b0(weights=None)
     model.classifier = nn.Sequential(
         nn.Dropout(p=0.2, inplace=True),
         nn.Linear(1280, cfg["num_classes"], bias=True),
     )
-    model.load_state_dict(torch.load(cfg["path"], map_location=DEVICE))
-    model.to(DEVICE).eval()
+    model.load_state_dict(torch.load(cfg["path"], map_location=device, weights_only=False))
+    model.to(device).eval()
     _model_cache[model_type] = model
     return model
 
@@ -153,7 +168,11 @@ def read_image(file_bytes):
 
 
 def predict(model, image, classes):
-    tensor = TRANSFORM(image).unsqueeze(0).to(DEVICE)
+    import torch
+    import torch.nn.functional as F
+
+    device = get_device()
+    tensor = get_transform()(image).unsqueeze(0).to(device)
     with torch.no_grad():
         outputs = model(tensor)
         probs = F.softmax(outputs, dim=1)
@@ -167,6 +186,15 @@ def predict(model, image, classes):
 
 
 def generate_heatmap(model, input_tensor, original_image):
+    if not ENABLE_GRADCAM:
+        return None
+    try:
+        import numpy as np
+        from pytorch_grad_cam import GradCAM
+        from pytorch_grad_cam.utils.image import show_cam_on_image
+    except ImportError:
+        return None
+
     cam = GradCAM(model=model, target_layers=[model.features[-1]])
     grayscale_cam = cam(input_tensor=input_tensor, targets=None)[0, :]
     img_resized = original_image.resize((224, 224))
@@ -186,18 +214,21 @@ def run_prediction(model_type, file_bytes):
     image = read_image(file_bytes)
     result_class, confidence, tensor, probabilities = predict(model, image, cfg["classes"])
 
+    import torch
     with torch.set_grad_enabled(True):
         heatmap_b64 = generate_heatmap(model, tensor, image)
 
-    return {
+    result = {
         "result": result_class,
         "confidence": confidence,
         "probabilities": probabilities,
         "model_type": model_type,
         "model_label": cfg["label"],
         "recommended_specialist": cfg["specialist"],
-        "heatmap_data": f"data:image/jpeg;base64,{heatmap_b64}",
     }
+    if heatmap_b64:
+        result["heatmap_data"] = f"data:image/jpeg;base64,{heatmap_b64}"
+    return result
 
 
 def save_prediction(user_id, result):
