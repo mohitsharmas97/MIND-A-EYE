@@ -1,13 +1,13 @@
-# Render / production — CPU-only PyTorch (no CUDA, ~500MB less disk/RAM)
+# Production (Render) — CPU-only PyTorch, no CUDA
 --extra-index-url https://download.pytorch.org/whl/cpu
 
 flask>=3.0
 flask-sqlalchemy>=3.1
 fpdf2>=2.7
-torch==2.5.1
-torchvision==0.20.1
+torch==2.12.1
+torchvision==0.22.1
 Pillow>=10.0
 python-dotenv>=1.0
 werkzeug>=3.0
 gunicorn>=22.0
-numpy>=1.24,<2.0
+numpy>=1.26

@@ -40,7 +40,25 @@ Open http://localhost:5000
 
 ## Deploy on Render
 
-### What caused the OOM error
+### Current issue (build failed)
+
+If you see:
+```text
+ERROR: No matching distribution found for torch==2.5.1
+Using Python version 3.14.3
+```
+
+**Cause:** Render defaulted to Python 3.14, but old torch pins only exist for Python 3.11. This repo now uses `torch==2.12.1` (CPU) which works on 3.14.
+
+**Also pin Python 3.11** (recommended, smaller/faster builds):
+
+1. Render Dashboard → your service → **Environment**
+2. Add: `PYTHON_VERSION` = `3.11.11`
+3. Redeploy
+
+Or ensure `runtime.txt` (contains `python-3.11.11`) is committed and pushed to GitHub.
+
+### Render checklist
 
 Render free tier has **512 MB RAM**. The default `pip install torch` pulled **CUDA PyTorch + NVIDIA drivers (~2 GB)** and Grad-CAM pulled **matplotlib/scipy**, which exceeded memory at startup.
 
