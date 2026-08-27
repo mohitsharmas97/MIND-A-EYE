@@ -49,14 +49,14 @@ def get_device():
 
 MODEL_CONFIG = {
     "dr": {
-        "path": "models/dr_model.pth",
+        "path": "models/best_dr_transfer_model.pth",
         "classes": ["Mild", "Moderate", "No_DR", "Proliferate_DR", "Severe"],
         "num_classes": 5,
         "label": "Diabetic Retinopathy (Eye)",
         "specialist": "Ophthalmologist",
     },
     "brain_tumor": {
-        "path": "models/brain_tumor.pth",
+        "path": "models/best_brain_tumor_model.pth",
         "classes": ["glioma", "meningioma", "notumor", "pituitary"],
         "num_classes": 4,
         "label": "Brain Tumor (Mind)",
@@ -130,7 +130,7 @@ def login_required(f):
 def inject_user():
     user = None
     if "user_id" in session:
-        row = User.query.get(session["user_id"])
+        row = db.session.get(User, session["user_id"])
         if row:
             user = {"id": row.id, "name": row.name, "email": row.email}
     return {"current_user": user}
@@ -208,15 +208,10 @@ def generate_heatmap(model, input_tensor, original_image):
 def run_prediction(model_type, file_bytes):
     cfg = MODEL_CONFIG[model_type]
     model = load_model(model_type)
-    if model is None:
-        raise FileNotFoundError(f"Model weights not found: {cfg['path']}")
 
     image = read_image(file_bytes)
     result_class, confidence, tensor, probabilities = predict(model, image, cfg["classes"])
-
-    import torch
-    with torch.set_grad_enabled(True):
-        heatmap_b64 = generate_heatmap(model, tensor, image)
+    heatmap_b64 = generate_heatmap(model, tensor, image)
 
     result = {
         "result": result_class,
